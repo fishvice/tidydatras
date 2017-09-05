@@ -24,7 +24,7 @@ tidy_hauls <- function(df) {
     # select only "needed" column - this should may be be user option
     select(id, survey, year, quarter, ship, gear, haulno, haulval, country, hauldur,
            shootlat, shootlong, date = datetime, depth,
-           area, subarea = statrec, daynight, datatype) %>%
+           subarea = statrec, daynight, datatype) %>%
     tbl_df()
 
   return(df)
