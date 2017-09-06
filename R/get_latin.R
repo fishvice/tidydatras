@@ -8,6 +8,9 @@
 #'
 get_latin <- function(df) {
 
+
+  colnames(df) <- tolower(colnames(df))
+
   df <-
     df %>%
     select(valid_aphia) %>%
