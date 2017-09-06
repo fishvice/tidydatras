@@ -8,8 +8,24 @@
 #'
 tidy_lengths <- function(hl, hh, species) {
 
-  colnames(species) <- tolower(colnames(species))
   colnames(hl) <- tolower(colnames(hl))
+
+  if(!missing(species)) {
+
+    colnames(species) <- tolower(colnames(species))
+
+  } else {
+
+    species <-
+      hl %>%
+      select(valid_aphia) %>%
+      distinct() %>%
+      get_latin()
+
+    # send to global environment
+    .species <<- species
+
+  }
 
   hl <-
     hl %>%
@@ -26,15 +42,15 @@ tidy_lengths <- function(hl, hh, species) {
     mutate(length = ifelse(lngtcode %in% c("1"), lngtclass, lngtclass / 10),
            hlnoatlngt = hlnoatlngt * subfactor) %>%
     # get the data type and hauldur
-    left_join(hh %>% select(id, datatype, hauldur)) %>%
+    left_join(hh %>% select(id, datatype, hauldur), by = "id") %>%
     # catch per hour
     mutate(n = ifelse(datatype == "R",
                       hlnoatlngt * 60 / hauldur,
                       hlnoatlngt)) %>%
     # join with latin name
-    left_join(species) %>%
+    left_join(species, by = "valid_aphia") %>%
     # select only needed columns
-    select(id, latin, sex, length, n) %>%
+    select(id, latin, species, sex, length, n) %>%
     tbl_df()
 
   return(hl)
