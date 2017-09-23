@@ -10,8 +10,9 @@ get_latin(df)
 \item{df}{A dataframe that contains a columname "validaphia"}
 }
 \value{
-A datafram with columns validaphia, latin and species name
+A dataframe with columns validaphia, latin and english species name.
 }
 \description{
-get_latin
+Accesss ICES getSpecies webserver. Equivalent to what one would obtain using
+https://datras.ices.dk/Data_products/qryspec.aspx
 }
