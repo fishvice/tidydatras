@@ -1,3 +1,20 @@
+#' get_latin2
+#'
+#' Accesss ICES vocab for speces
+#'
+#' @return A dataframe with columns validaphia, latin and english species name.
+#'
+#' @export
+#'
+get_latin2 <- function() {
+
+  icesVocab::getCodeList(code_type = "SpecWoRMS") %>%
+    select(valid_aphia = Key,
+           latin = Description,
+           species = LongDescription)
+
+}
+
 #' get_latin
 #'
 #' Accesss ICES getSpecies webserver. Equivalent to what one would obtain using
