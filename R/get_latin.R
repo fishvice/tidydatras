@@ -4,8 +4,6 @@
 #'
 #' @return A dataframe with columns validaphia, latin and english species name.
 #'
-#' @export
-#'
 get_latin2 <- function() {
 
   icesVocab::getCodeList(code_type = "SpecWoRMS") %>%
@@ -23,10 +21,13 @@ get_latin2 <- function() {
 #' @param df A dataframe that contains a columname "validaphia"
 #'
 #' @return A dataframe with columns validaphia, latin and english species name.
+#' If no object is passed, then read species code from icesVocab
 #'
 #' @export
 #'
 get_latin <- function(df) {
+
+  if(missing(df)) return(get_latin2())
 
 
   colnames(df) <- tolower(colnames(df))

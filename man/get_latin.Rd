@@ -11,6 +11,7 @@ get_latin(df)
 }
 \value{
 A dataframe with columns validaphia, latin and english species name.
+If no object is passed, then read species code from icesVocab
 }
 \description{
 Accesss ICES getSpecies webserver. Equivalent to what one would obtain using

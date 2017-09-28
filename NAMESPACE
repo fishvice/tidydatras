@@ -2,7 +2,6 @@
 
 export(cpue_per_length_per_haul)
 export(get_latin)
-export(get_latin2)
 export(id_separate)
 export(id_unite)
 export(tidy_ages)
