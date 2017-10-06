@@ -12,7 +12,7 @@ tidy_hauls <- function(df) {
   df <-
     df %>%
     # create a unique station id
-    unite(id, year, quarter, ship, gear, haulno, remove = FALSE) %>%
+    id_unite(remove = FALSE) %>%
     # get proper date
     mutate(timeshot = stringr::str_pad(timeshot, width = 4, side = "left", pad = "0"),
            timeshot = paste0(stringr::str_sub(timeshot, 1, 2),

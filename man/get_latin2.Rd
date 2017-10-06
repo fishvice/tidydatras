@@ -7,8 +7,8 @@
 get_latin2()
 }
 \value{
-A dataframe with columns validaphia, latin and english species name.
+A dataframe with columns valid_aphia, latin and species (english) name.
 }
 \description{
-Accesss ICES vocab for speces
+Accesss ICES vocab for species
 }

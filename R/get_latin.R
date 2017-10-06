@@ -1,8 +1,8 @@
 #' get_latin2
 #'
-#' Accesss ICES vocab for speces
+#' Accesss ICES vocab for species
 #'
-#' @return A dataframe with columns validaphia, latin and english species name.
+#' @return A dataframe with columns valid_aphia, latin and species (english) name.
 #'
 get_latin2 <- function() {
 
@@ -18,7 +18,7 @@ get_latin2 <- function() {
 #' Accesss ICES getSpecies webserver. Equivalent to what one would obtain using
 #' https://datras.ices.dk/Data_products/qryspec.aspx
 #'
-#' @param df A dataframe that contains a columname "validaphia"
+#' @param df A dataframe that contains a columname "valid_aphia"
 #'
 #' @return A dataframe with columns validaphia, latin and english species name.
 #' If no object is passed, then read species code from icesVocab

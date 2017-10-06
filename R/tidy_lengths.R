@@ -1,8 +1,22 @@
 #' tidy_lengths
 #'
-#' @param hl datras length untidy length data
-#' @param hh tidy datras haul data
-#' @param species species code
+#' @param hl datras untidy length dataframe, as obtained via the function
+#' icesDatras::getDATRAS
+#' @param hh datras tidy haul data
+#' @param species dataframe with species code, of the form obtained via function
+#' get_species. Required column names are valid_aphia and latin. If dataframe
+#' not supplied in the function argument, it will be automatically obtained.
+#'
+#' @return A tibble with 6 variables:
+#'
+#' \describe{
+#'   \item{id}{haul id}
+#'   \item{latin}{Latin name of species}
+#'   \item{species}{English name of species}
+#'   \item{sex}{Sex of fish}
+#'   \item{length}{Length in centimeters}
+#'   \item{n}{Number of fish per standardized to 60 minute haul}
+#' }
 #'
 #' @export
 #'
@@ -22,9 +36,6 @@ tidy_lengths <- function(hl, hh, species) {
       distinct() %>%
       get_latin()
 
-    # send to global environment
-    .species <<- species
-
   }
 
   hl <-
@@ -34,7 +45,7 @@ tidy_lengths <- function(hl, hh, species) {
     # EINAR - not sure if this is right, done here to test if any difference
     #         (did though not help with respect to discrepancy here below)
     #filter(specval == 1) %>%
-    unite(id, year, quarter, ship, gear, haulno) %>%
+    id_unite() %>%
     # only stations that are in the station table (north sea ibts)
     #  may be reduntant
     filter(id %in% hh$id) %>%

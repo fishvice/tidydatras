@@ -7,7 +7,7 @@
 get_latin(df)
 }
 \arguments{
-\item{df}{A dataframe that contains a columname "validaphia"}
+\item{df}{A dataframe that contains a columname "valid_aphia"}
 }
 \value{
 A dataframe with columns validaphia, latin and english species name.
