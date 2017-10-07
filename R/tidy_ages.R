@@ -36,8 +36,8 @@ tidy_ages <- function(ca, species) {
 
     species <-
       ca %>%
-      select(valid_aphia) %>%
-      distinct() %>%
+      dplyr::select(valid_aphia) %>%
+      dplyr::distinct() %>%
       get_latin()
 
   }
@@ -46,10 +46,10 @@ tidy_ages <- function(ca, species) {
     ca %>%
     id_unite() %>%
     # turn everything to cm
-    mutate(length = ifelse(!lngtcode %in% c("1"), lngtclass / 10, lngtclass),
-           indwgt = ifelse(indwgt <= 0, NA, indwgt)) %>%
-    left_join(species) %>%
-    select(id, latin, species, length, sex, maturity, age, wgt = indwgt, n = noatalk)
+    dplyr::mutate(length = ifelse(!lngtcode %in% c("1"), lngtclass / 10, lngtclass),
+                  indwgt = ifelse(indwgt <= 0, NA, indwgt)) %>%
+    dplyr::left_join(species) %>%
+    dplyr::select(id, latin, species, length, sex, maturity, age, wgt = indwgt, n = noatalk)
 
   return(ca)
 

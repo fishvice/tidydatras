@@ -32,37 +32,37 @@ tidy_lengths <- function(hl, hh, species) {
 
     species <-
       hl %>%
-      select(valid_aphia) %>%
-      distinct() %>%
+      dplyr::select(valid_aphia) %>%
+      dplyr::distinct() %>%
       get_latin()
 
   }
 
   hl <-
     hl %>%
-    distinct() %>%
-    filter(!is.na(speccode), !is.na(lngtclass), !is.na(lngtcode)) %>%
+    dplyr::distinct() %>%
+    dplyr::filter(!is.na(speccode), !is.na(lngtclass), !is.na(lngtcode)) %>%
     # EINAR - not sure if this is right, done here to test if any difference
     #         (did though not help with respect to discrepancy here below)
     #filter(specval == 1) %>%
     id_unite() %>%
     # only stations that are in the station table (north sea ibts)
     #  may be reduntant
-    filter(id %in% hh$id) %>%
+    dplyr::filter(id %in% hh$id) %>%
     # length class to cm
-    mutate(length = ifelse(lngtcode %in% c("1"), lngtclass, lngtclass / 10),
-           hlnoatlngt = hlnoatlngt * subfactor) %>%
+    dplyr::mutate(length = ifelse(lngtcode %in% c("1"), lngtclass, lngtclass / 10),
+                  hlnoatlngt = hlnoatlngt * subfactor) %>%
     # get the data type and hauldur
-    left_join(hh %>% select(id, datatype, hauldur), by = "id") %>%
+    dplyr::left_join(hh %>% select(id, datatype, hauldur), by = "id") %>%
     # catch per hour
-    mutate(n = ifelse(datatype == "R",
-                      hlnoatlngt * 60 / hauldur,
-                      hlnoatlngt)) %>%
+    dplyr::mutate(n = ifelse(datatype == "R",
+                             hlnoatlngt * 60 / hauldur,
+                             hlnoatlngt)) %>%
     # join with latin name
-    left_join(species, by = "valid_aphia") %>%
+    dplyr::left_join(species, by = "valid_aphia") %>%
     # select only needed columns
-    select(id, latin, species, sex, length, n) %>%
-    tbl_df()
+    dplyr::select(id, latin, species, sex, length, n) %>%
+    dplyr::tbl_df()
 
   return(hl)
 

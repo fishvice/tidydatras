@@ -7,7 +7,7 @@
 get_latin2 <- function() {
 
   icesVocab::getCodeList(code_type = "SpecWoRMS") %>%
-    select(valid_aphia = Key,
+    dplyr::select(valid_aphia = Key,
            latin = Description,
            species = LongDescription)
 
@@ -34,8 +34,8 @@ get_latin <- function(df) {
 
   df <-
     df %>%
-    select(valid_aphia) %>%
-    distinct()
+    dplyr::select(valid_aphia) %>%
+    dplyr::distinct()
 
   out.valid <- list()
 
@@ -49,17 +49,17 @@ get_latin <- function(df) {
 
 
   ret <-
-    bind_rows(out.valid) %>%
-    as_tibble() %>%
-    select(valid_aphia = aphia, latin = latinname, species = commonname) %>%
+    dplyr::bind_rows(out.valid) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(valid_aphia = aphia, latin = latinname, species = commonname) %>%
     # count the number of letters in the english name
-    mutate(n = nchar(species)) %>%
-    arrange(valid_aphia, n) %>%
-    group_by(valid_aphia) %>%
+    dplyr::mutate(n = nchar(species)) %>%
+    dplyr::arrange(valid_aphia, n) %>%
+    dplyr::group_by(valid_aphia) %>%
     # select only the record where the english name is the shortest
-    slice(1) %>%
-    ungroup() %>%
-    select(-n)
+    dplyr::slice(1) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-n)
 
   return(ret)
 
