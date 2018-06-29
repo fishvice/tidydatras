@@ -4,10 +4,13 @@
 \alias{tidy_hauls}
 \title{tidy_hauls}
 \usage{
-tidy_hauls(df)
+tidy_hauls(df, selected_column = TRUE)
 }
 \arguments{
 \item{df}{A datras haul dataframe}
+
+\item{selected_variables}{A TRUE/FALSE flag. Should only selected variables
+(default TRUE) or all variable (FALSE) returned}
 }
 \value{
 data.frame

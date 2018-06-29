@@ -50,6 +50,7 @@ tidy_lengths <- function(hl, hh, species) {
     #  may be reduntant
     dplyr::filter(id %in% hh$id) %>%
     # length class to cm
+    # Note: In some cases I have seen floor being used in lngtclass / 10
     dplyr::mutate(length = ifelse(lngtcode %in% c("1"), lngtclass, lngtclass / 10),
                   hlnoatlngt = hlnoatlngt * subfactor) %>%
     # get the data type and hauldur
