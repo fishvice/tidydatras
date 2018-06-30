@@ -1,4 +1,4 @@
-#' tidy_ages
+#' tidy_ca
 #'
 #' @param ca datras untidy age dataframe, as obtained via the function
 #' icesDatras::getDATRAS
@@ -22,7 +22,7 @@
 #'
 #' @export
 #'
-tidy_ages <- function(ca, species) {
+tidy_ca <- function(ca, species) {
 
 
   colnames(ca) <- tolower(colnames(ca))

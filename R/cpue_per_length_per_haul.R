@@ -26,12 +26,12 @@ cpue_per_length_per_haul <- function(hh, hl, tidy = TRUE) {
     expand.grid(id = unique(hh$id),
                 latin = unique(hl$latin),
                 stringsAsFactors = FALSE) %>%
-    tbl_df()
+    dplyr::as_tibble()
   # stations with "missing species"
   # "return all rows from st where there are not matching values in length,
   #    keeping just columns from st."
   st.zero <-
-    dplyr::anti_join(st.grid, le %>%
+    dplyr::anti_join(st.grid, hl %>%
                        dplyr::select(id, latin) %>%
                        dplyr::distinct(),
                      by = c("id", "latin")) %>%

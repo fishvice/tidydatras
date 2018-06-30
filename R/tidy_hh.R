@@ -1,18 +1,17 @@
-#' tidy_hauls
+#' tidy_hh
 #'
 #' @param df A datras haul dataframe
-#' @param selected_variables A TRUE/FALSE flag. Should only selected variables
-#' (default TRUE) or all variable (FALSE) returned
+#' @param all_variables A TRUE/FALSE flag. Should all variables
+#' (default FALSE) or all variable (TRUE) be returned
 #'
 #' @return data.frame
 #' @export
 #'
-tidy_hauls <- function(df, selected_column = TRUE) {
-
-  colnames(df) <- tolower(colnames(df))
+tidy_hh <- function(df, all_variables = FALSE) {
 
   df <-
     df %>%
+    select_all(tolower) %>%
     # create a unique station id
     id_unite(remove = FALSE) %>%
     # get proper date
@@ -23,7 +22,7 @@ tidy_hauls <- function(df, selected_column = TRUE) {
                   datetime = lubridate::ymd_hm(paste(year, month, day, timeshot))) %>%
     dplyr::tbl_df()
 
-  if(!selected_column) {
+  if(all_variables) {
 
     df %>%
       select(-recordtype) %>%
@@ -31,9 +30,15 @@ tidy_hauls <- function(df, selected_column = TRUE) {
 
   } else {
     df  %>%
-      dplyr::select(id, survey, year, quarter, ship, gear, haulno, haulval, country, hauldur,
-                    shootlat, shootlong, date = datetime, depth,
-                    subarea = statrec, daynight, datatype) %>%
+      dplyr::select(id, year, quarter, survey, ship, gear, haulno,
+                    date = datetime, country, depth, haulval, hauldur,
+                    shootlat, shootlong,
+                    haullat, haullong,
+                    statrec = statrec,
+                    daynight,
+                    datatype,
+                    stdspecreccode,
+                    bycspecreccode) %>%
       return()
   }
 

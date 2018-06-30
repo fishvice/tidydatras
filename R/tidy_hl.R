@@ -1,4 +1,4 @@
-#' tidy_lengths
+#' tidy_hl
 #'
 #' @param hl datras untidy length dataframe, as obtained via the function
 #' icesDatras::getDATRAS
@@ -20,7 +20,7 @@
 #'
 #' @export
 #'
-tidy_lengths <- function(hl, hh, species) {
+tidy_hl <- function(hl, hh, species) {
 
   colnames(hl) <- tolower(colnames(hl))
 
