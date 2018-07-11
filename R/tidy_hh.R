@@ -30,7 +30,7 @@ tidy_hh <- function(df, all_variables = FALSE) {
 
   } else {
     df  %>%
-      dplyr::select(id, year, quarter, survey, ship, gear, haulno,
+      dplyr::select(survey, id, year, quarter, survey, ship, gear, haulno,
                     date = datetime, country, depth, haulval, hauldur,
                     shootlat, shootlong,
                     haullat, haullong,

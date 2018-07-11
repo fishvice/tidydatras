@@ -6,6 +6,8 @@
 #' @param species dataframe with species code, of the form obtained via function
 #' get_species. Required column names are valid_aphia and latin. If dataframe
 #' not supplied in the function argument, it will be automatically obtained.
+#' @param all_variables A TRUE/FALSE flag. Should all variables
+#' (default FALSE) or all variable (TRUE) be returned
 #'
 #' @return A tibble with 6 variables:
 #'
@@ -20,28 +22,14 @@
 #'
 #' @export
 #'
-tidy_hl <- function(hl, hh, species) {
+tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
 
   colnames(hl) <- tolower(colnames(hl))
 
-  if(!missing(species)) {
-
-    colnames(species) <- tolower(colnames(species))
-
-  } else {
-
-    species <-
-      hl %>%
-      dplyr::select(valid_aphia) %>%
-      dplyr::distinct() %>%
-      get_latin()
-
-  }
-
   hl <-
     hl %>%
-    dplyr::distinct() %>%
-    dplyr::filter(!is.na(speccode), !is.na(lngtclass), !is.na(lngtcode)) %>%
+    #dplyr::distinct() %>%
+    #dplyr::filter(!is.na(speccode), !is.na(lngtclass), !is.na(lngtcode)) %>%
     # EINAR - not sure if this is right, done here to test if any difference
     #         (did though not help with respect to discrepancy here below)
     #filter(specval == 1) %>%
@@ -58,13 +46,27 @@ tidy_hl <- function(hl, hh, species) {
     # catch per hour
     dplyr::mutate(n = ifelse(datatype == "R",
                              hlnoatlngt * 60 / hauldur,
-                             hlnoatlngt)) %>%
-    # join with latin name
-    dplyr::left_join(species, by = "valid_aphia") %>%
-    # select only needed columns
-    dplyr::select(id, latin, species, sex, length, n) %>%
-    dplyr::tbl_df()
+                             hlnoatlngt))
+  # If species dataframe passed to function, supply latin name
+  if(!missing(species)) {
+    hl <-
+      hl %>%
+      mutate(aphia = valid_aphia,
+             aphia = ifelse(is.na(aphia) & speccodetype == "W",
+                            speccode,
+                            aphia)) %>%
+      left_join(species) %>%
+      select(-aphia)
+  }
 
-  return(hl)
+  if(!all_variables) {
+    hl <-
+      hl %>%
+      # select only needed columns
+      dplyr::select(survey, id, latin, sex, length, n)
+  }
+
+
+  return(hl %>% as_tibble())
 
 }

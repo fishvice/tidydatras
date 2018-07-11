@@ -27,29 +27,30 @@ tidy_ca <- function(ca, species) {
 
   colnames(ca) <- tolower(colnames(ca))
 
-
-  if(!missing(species)) {
-
-    colnames(species) <- tolower(colnames(species))
-
-  } else {
-
-    species <-
-      ca %>%
-      dplyr::select(valid_aphia) %>%
-      dplyr::distinct() %>%
-      get_latin()
-
-  }
-
   ca <-
     ca %>%
     id_unite() %>%
     # turn everything to cm
     dplyr::mutate(length = ifelse(!lngtcode %in% c("1"), lngtclass / 10, lngtclass),
-                  indwgt = ifelse(indwgt <= 0, NA, indwgt)) %>%
-    dplyr::left_join(species) %>%
-    dplyr::select(id, latin, species, length, sex, maturity, age, wgt = indwgt, n = noatalk)
+                  indwgt = ifelse(indwgt <= 0, NA, indwgt))
+
+  # If species dataframe passed to function, supply latin name
+  if(!missing(species)) {
+    ca <-
+      ca %>%
+      mutate(aphia = valid_aphia,
+             aphia = ifelse(is.na(aphia) & speccodetype == "W",
+                            speccode,
+                            aphia)) %>%
+      left_join(species) %>%
+      select(-aphia)
+  }
+
+  ca <-
+    ca %>%
+    dplyr::mutate(maturity = as.character(maturity)) %>%
+    dplyr::select(survey, id, latin, length, sex, maturity, age, wgt = indwgt, n = noatalk) %>%
+    as_tibble()
 
   return(ca)
 

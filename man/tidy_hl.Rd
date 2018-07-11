@@ -4,7 +4,7 @@
 \alias{tidy_hl}
 \title{tidy_hl}
 \usage{
-tidy_hl(hl, hh, species)
+tidy_hl(hl, hh, species, all_variables = FALSE)
 }
 \arguments{
 \item{hl}{datras untidy length dataframe, as obtained via the function
@@ -15,6 +15,9 @@ icesDatras::getDATRAS}
 \item{species}{dataframe with species code, of the form obtained via function
 get_species. Required column names are valid_aphia and latin. If dataframe
 not supplied in the function argument, it will be automatically obtained.}
+
+\item{all_variables}{A TRUE/FALSE flag. Should all variables
+(default FALSE) or all variable (TRUE) be returned}
 }
 \value{
 A tibble with 6 variables:
