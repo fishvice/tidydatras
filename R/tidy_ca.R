@@ -31,7 +31,7 @@ tidy_ca <- function(ca, species) {
     ca %>%
     id_unite() %>%
     # turn everything to cm
-    dplyr::mutate(length = ifelse(!lngtcode %in% c("1"), lngtclass / 10, lngtclass),
+    dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
                   indwgt = ifelse(indwgt <= 0, NA, indwgt))
 
   # If species dataframe passed to function, supply latin name

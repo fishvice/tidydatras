@@ -39,10 +39,11 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
     dplyr::filter(id %in% hh$id) %>%
     # length class to cm
     # Note: In some cases I have seen floor being used in lngtclass / 10
-    dplyr::mutate(length = ifelse(lngtcode %in% c("1"), lngtclass, lngtclass / 10),
+    dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
                   hlnoatlngt = hlnoatlngt * subfactor) %>%
     # get the data type and hauldur
-    dplyr::left_join(hh %>% select(id, datatype, hauldur), by = "id") %>%
+    dplyr::left_join(hh %>%
+                       dplyr::select(id, datatype, hauldur), by = "id") %>%
     # catch per hour
     dplyr::mutate(n = ifelse(datatype == "R",
                              hlnoatlngt * 60 / hauldur,
@@ -51,12 +52,12 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
   if(!missing(species)) {
     hl <-
       hl %>%
-      mutate(aphia = valid_aphia,
+      dplyr::mutate(aphia = valid_aphia,
              aphia = ifelse(is.na(aphia) & speccodetype == "W",
                             speccode,
                             aphia)) %>%
-      left_join(species) %>%
-      select(-aphia)
+      dplyr::left_join(species) %>%
+      dplyr::select(-aphia)
   }
 
   if(!all_variables) {
@@ -67,6 +68,6 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
   }
 
 
-  return(hl %>% as_tibble())
+  return(hl %>% dplyr::as_tibble())
 
 }

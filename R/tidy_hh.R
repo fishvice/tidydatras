@@ -11,7 +11,7 @@ tidy_hh <- function(df, all_variables = FALSE) {
 
   df <-
     df %>%
-    select_all(tolower) %>%
+    dplyr::rename_all(tolower) %>%
     # create a unique station id
     id_unite(remove = FALSE) %>%
     # get proper date
@@ -25,7 +25,7 @@ tidy_hh <- function(df, all_variables = FALSE) {
   if(all_variables) {
 
     df %>%
-      select(-recordtype) %>%
+      dplyr::select(-recordtype) %>%
       return()
 
   } else {
