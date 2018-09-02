@@ -5,6 +5,8 @@
 #' @param species dataframe with species code, of the form obtained via function
 #' get_species. Required column names are valid_aphia and latin. If dataframe
 #' not supplied in the function argument, it will be automatically obtained.
+#' @param all_variables A TRUE/FALSE flag. Should all variables
+#' (default FALSE) or all variable (TRUE) be returned
 #'
 #' @return A tibble with
 #'
@@ -22,7 +24,7 @@
 #'
 #' @export
 #'
-tidy_ca <- function(ca, species) {
+tidy_ca <- function(ca, species, all_variables = FALSE) {
 
 
   colnames(ca) <- tolower(colnames(ca))
@@ -42,15 +44,28 @@ tidy_ca <- function(ca, species) {
              aphia = ifelse(is.na(aphia) & speccodetype == "W",
                             speccode,
                             aphia)) %>%
-      left_join(species) %>%
+      left_join(species, by = "aphia") %>%
       select(-aphia)
   }
 
   ca <-
     ca %>%
-    dplyr::mutate(maturity = as.character(maturity)) %>%
-    dplyr::select(survey, id, latin, length, sex, maturity, age, wgt = indwgt, n = noatalk) %>%
+    dplyr::mutate(maturity = as.character(maturity),
+                  areacode = as.character(areacode),
+                  doortype = as.character(doortype),
+                  gearexp = as.character(gearexp),
+                  lngtcode = as.character(lngtcode),
+                  plusgr = as.character(plusgr),
+                  sex = as.character(sex),
+                  stno = as.character(stno)) %>%
     as_tibble()
+
+  if(!all_variables) {
+    ca <-
+      ca %>%
+      dplyr::select(survey, id, latin, length, sex, maturity, age, wgt = indwgt, n = noatalk) %>%
+      as_tibble()
+  }
 
   return(ca)
 

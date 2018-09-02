@@ -60,6 +60,15 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
       dplyr::select(-aphia)
   }
 
+  hl <-
+    hl %>%
+    dplyr::mutate(doortype = as.character(doortype),
+                  gearexp = as.character(gearexp),
+                  stno = as.character(stno),
+                  lngtcode = as.character(lngtcode),
+                  sex = as.character(sex)) %>%
+    dplyr::as_tibble()
+
   if(!all_variables) {
     hl <-
       hl %>%

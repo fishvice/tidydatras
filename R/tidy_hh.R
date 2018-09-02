@@ -20,7 +20,14 @@ tidy_hh <- function(df, all_variables = FALSE) {
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
                   datetime = lubridate::ymd_hm(paste(year, month, day, timeshot))) %>%
-    dplyr::tbl_df()
+    dplyr::tbl_df() %>%
+    dplyr::mutate(doortype = as.character(doortype),
+                  gearexp = as.character(gearexp),
+                  hydrostno = as.character(hydrostno),
+                  rigging = as.character(rigging),
+                  stno = as.character(stno),
+                  stratum = as.character(stratum),
+                  thermocline = as.character(thermocline))
 
   if(all_variables) {
 
