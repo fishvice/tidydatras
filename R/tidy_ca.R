@@ -29,6 +29,8 @@ tidy_ca <- function(ca, species, all_variables = FALSE) {
 
   colnames(ca) <- tolower(colnames(ca))
 
+  if(missing(species)) species <- readr::read_csv("ftp://ftp.hafro.is/pub/reiknid/einar/datras_worms.csv")
+
   ca <-
     ca %>%
     id_unite() %>%

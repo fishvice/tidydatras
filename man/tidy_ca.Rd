@@ -4,7 +4,7 @@
 \alias{tidy_ca}
 \title{tidy_ca}
 \usage{
-tidy_ca(ca, species)
+tidy_ca(ca, species, all_variables = FALSE)
 }
 \arguments{
 \item{ca}{datras untidy age dataframe, as obtained via the function
@@ -13,6 +13,9 @@ icesDatras::getDATRAS}
 \item{species}{dataframe with species code, of the form obtained via function
 get_species. Required column names are valid_aphia and latin. If dataframe
 not supplied in the function argument, it will be automatically obtained.}
+
+\item{all_variables}{A TRUE/FALSE flag. Should all variables
+(default FALSE) or all variable (TRUE) be returned}
 }
 \value{
 A tibble with

@@ -26,6 +26,8 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
 
   colnames(hl) <- tolower(colnames(hl))
 
+  if(missing(species)) species <- readr::read_csv("ftp://ftp.hafro.is/pub/reiknid/einar/datras_worms.csv")
+
   hl <-
     hl %>%
     #dplyr::distinct() %>%
@@ -56,7 +58,7 @@ tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
              aphia = ifelse(is.na(aphia) & speccodetype == "W",
                             speccode,
                             aphia)) %>%
-      dplyr::left_join(species) %>%
+      dplyr::left_join(species, by = "aphia") %>%
       dplyr::select(-aphia)
   }
 
