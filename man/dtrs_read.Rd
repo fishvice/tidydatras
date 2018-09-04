@@ -4,13 +4,17 @@
 \alias{dtrs_read}
 \title{Reads a local DATRAS table into R session}
 \usage{
-dtrs_read(surveys, type = "HH", path = "data-raw/datras")
+dtrs_read(type = "HH", surveys, years, quarters, path = "data-raw/datras")
 }
 \arguments{
+\item{type}{The table type, one of "HH", "HL" or "CA"}
+
 \item{surveys}{Character vector containing survey names, e.g. c("NS-IBTS",
 ROCKALL").}
 
-\item{type}{The table type, one of "HH", "HL" or "CA"}
+\item{years}{What years?}
+
+\item{quarters}{What quarters?}
 
 \item{path}{The directory path of were the data is stored.}
 }
