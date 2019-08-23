@@ -22,7 +22,7 @@ hh <-
                         survey = "NS-IBTS",
                         years = yrs,
                         quarters = qs) %>%
-  tidy_hauls()
+  dtrs_tidy_hh()
 glimpse(hh)
 
 hl <-
@@ -30,7 +30,7 @@ hl <-
                         survey = "NS-IBTS",
                         years = yrs,
                         quarters = qs) %>%
-  tidy_lengths(hh)
+  dtrs_tidy_hl(hh)
 glimpse(hl)
 
 ca <-
@@ -38,7 +38,7 @@ ca <-
                         survey = "NS-IBTS",
                         years = yrs,
                         quarters = qs) %>%
-  tidy_ages()
+  dtrs_tidy_ca()
 glimpse(ca)
 ```
 
