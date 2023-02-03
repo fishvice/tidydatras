@@ -23,7 +23,6 @@ get_latin2 <- function() {
 #' @return A dataframe with columns validaphia, latin and english species name.
 #' If no object is passed, then read species code from icesVocab
 #'
-#' @export
 #'
 get_latin <- function(df) {
 

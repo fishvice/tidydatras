@@ -7,7 +7,6 @@
 #' @param tidy If FALSE, first tidy the dataframes using functions tidy_hh and
 #' tidy_hl (not implemented)
 #'
-#' @export
 #'
 cpue_per_length_per_haul <- function(hh, hl, tidy = TRUE) {
 

@@ -3,7 +3,6 @@
 #' @param fname The name of the exchange file (usually a csv-file)
 #'
 #' @return a list
-#' @export
 #'
 
 read_exchange <- function(fname) {
