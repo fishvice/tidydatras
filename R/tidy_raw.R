@@ -31,7 +31,7 @@ tidy_hh <- function(d, remove = TRUE) {
 
   d <-
     d |>
-    tidy_raw() |>
+    tidy_raw(remove = remove) |>
     # get proper date
     dplyr::mutate(timeshot = stringr::str_pad(timeshot, width = 4, side = "left", pad = "0"),
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
@@ -57,7 +57,7 @@ tidy_hh <- function(d, remove = TRUE) {
 tidy_hl <- function(d, remove = TRUE) {
 
   d <-
-    tidy_raw() |>
+    tidy_raw(remove = remove) |>
     # length class to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
                   hlnoatlngt = hlnoatlngt * subfactor)
@@ -92,7 +92,7 @@ tidy_ca <- function(d, remove = TRUE) {
 
   d <-
     d %>%
-    tidy_raw() |>
+    tidy_raw(remove = remove) |>
     # length class to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
                   hlnoatlngt = hlnoatlngt * subfactor)
