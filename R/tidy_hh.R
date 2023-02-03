@@ -1,17 +1,24 @@
 #' tidy_hh
 #'
 #' @param df A datras haul dataframe
-#' @param all_variables A TRUE/FALSE flag. Should all variables
-#' (default FALSE) or all variable (TRUE) be returned
+#' @param remove logical; remove all but "essential" columns
 #'
 #' @return data.frame
 #' @export
 #'
-tidy_hh <- function(df, all_variables = FALSE) {
+tidy_hh <- function(df, remove = TRUE) {
+
+
+  key_int <- datras_field_types |> filter(type == "int") |> pull(field) |> unique()
+  key_dbl <- datras_field_types |> filter(type == "dbl") |> pull(field) |> unique()
 
   df <-
     df %>%
+    mutate(across(everything(),   as.character)) %>%
+    mutate(across(any_of(key_int), as.integer)) %>%
+    mutate(across(any_of(key_dbl), as.numeric)) %>%
     dplyr::rename_all(tolower) %>%
+    tibble::as_tibble() |>
     # create a unique station id
     id_unite(remove = FALSE) %>%
     # get proper date
@@ -19,17 +26,11 @@ tidy_hh <- function(df, all_variables = FALSE) {
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
-                  datetime = lubridate::ymd_hm(paste(year, month, day, timeshot))) %>%
-    dplyr::tbl_df() %>%
-    dplyr::mutate(doortype = as.character(doortype),
-                  gearexp = as.character(gearexp),
-                  hydrostno = as.character(hydrostno),
-                  rigging = as.character(rigging),
-                  stno = as.character(stno),
-                  stratum = as.character(stratum),
-                  thermocline = as.character(thermocline))
+                  datetime = lubridate::ymd_hm(paste(year, month, day, timeshot)))
 
-  if(all_variables) {
+
+
+  if(!remove) {
 
     df %>%
       dplyr::select(-recordtype) %>%
@@ -37,15 +38,13 @@ tidy_hh <- function(df, all_variables = FALSE) {
 
   } else {
     df  %>%
-      dplyr::select(survey, id, year, quarter, survey, ship, gear, haulno,
+      dplyr::select(survey, .id, year, quarter, survey, ship, gear, haulno,
                     date = datetime, country, depth, haulval, hauldur,
                     shootlat, shootlong,
                     haullat, haullong,
                     statrec = statrec,
                     daynight,
-                    datatype,
-                    stdspecreccode,
-                    bycspecreccode) %>%
+                    datatype) %>%
       return()
   }
 
