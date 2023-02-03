@@ -4,7 +4,6 @@
 #' c("ROCKALL", "NS-IBTS").
 #'
 #' @return A tibble containing variable survey, year and quarter
-#' @export
 #'
 dtrs_overview <- function(survey) {
 

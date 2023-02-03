@@ -14,7 +14,6 @@
 #'
 #' @return A tibble
 #'
-#' @export
 #'
 dtrs_read <- function(type = "HH", surveys, years, quarters, path = "data-raw/datras") {
 

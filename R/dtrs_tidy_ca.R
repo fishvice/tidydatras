@@ -22,7 +22,6 @@
 #'   \item{n}{Number of fish}
 #' }
 #'
-#' @export
 #'
 dtrs_tidy_ca <- function(ca, species, all_variables = FALSE) {
 

@@ -20,7 +20,6 @@
 #'   \item{n}{Number of fish per standardized to 60 minute haul}
 #' }
 #'
-#' @export
 #'
 dtrs_tidy_hl <- function(hl, hh, species, all_variables = FALSE) {
 

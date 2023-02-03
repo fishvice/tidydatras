@@ -13,7 +13,6 @@
 #' downloaded and stored.
 #' @param path Path to the directory where the data are stored.
 #'
-#' @export
 #'
 dtrs_download <- function(d, record = c("HH", "HL", "CA"), path = "data-raw/datras") {
 

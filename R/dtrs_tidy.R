@@ -7,7 +7,6 @@
 #' if all or only "necessary" variables are return.
 #' @param ...
 #'
-#' @export
 #'
 dtrs_tidy <- function(d, all_variables = FALSE, ...) {
 

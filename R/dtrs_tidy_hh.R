@@ -5,7 +5,6 @@
 #' (default FALSE) or all variable (TRUE) be returned
 #'
 #' @return data.frame
-#' @export
 #'
 dtrs_tidy_hh <- function(df, all_variables = FALSE) {
 

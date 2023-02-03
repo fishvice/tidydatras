@@ -31,13 +31,14 @@ tidy_hh <- function(d, remove = TRUE) {
 
   d <-
     d |>
-    tidy_raw(remove = remove) |>
+    # not the same remove as in the function call
+    tidy_raw(remove = TRUE) |>
     # get proper date
     dplyr::mutate(timeshot = stringr::str_pad(timeshot, width = 4, side = "left", pad = "0"),
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
-                  datetime = lubridate::ymd_hm(paste(year, month, day, timeshot)))
+                  datetime = lubridate::ymd_hm(paste(stringr::str_sub(id, 1, 4), month, day, timeshot)))
 
   return(d)
 
@@ -57,7 +58,9 @@ tidy_hh <- function(d, remove = TRUE) {
 tidy_hl <- function(d, remove = TRUE) {
 
   d <-
-    tidy_raw(remove = remove) |>
+    d |>
+    # not the same remove as in the function call
+    tidy_raw(remove = TRUE) |>
     # length class to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
                   hlnoatlngt = hlnoatlngt * subfactor)
@@ -92,10 +95,11 @@ tidy_ca <- function(d, remove = TRUE) {
 
   d <-
     d %>%
-    tidy_raw(remove = remove) |>
-    # length class to cm
+    # not the same remove as in the function call
+    tidy_raw(remove = TRUE) |>
+    # turn everything to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
-                  hlnoatlngt = hlnoatlngt * subfactor)
+                  indwgt = ifelse(indwgt <= 0, NA, indwgt))
 
 
   return(d)
