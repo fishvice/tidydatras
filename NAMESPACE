@@ -3,6 +3,7 @@
 export("%>%")
 export(dr_geoinside)
 export(dr_getdata)
+export(dr_getoverview)
 export(dr_idseparate)
 export(dr_idunite)
 export(dr_tidy)

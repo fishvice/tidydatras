@@ -64,12 +64,14 @@ dr_getdata <- function(record = "HH", surveys, years, quarters) {
   # purrr this
   for (survey in c(surveys)) {
     counter <- counter + 1
-    res[[counter]] <-
+    d <-
       suppressMessages(icesDatras::getDATRAS(record   = record,
                                          survey   = survey,
                                          years    = years,
-                                         quarters = quarters)) |>
-      dr_settypes()
+                                         quarters = quarters))
+
+    if(!is.null(d)) res[[counter]] <- d |> dr_settypes()
+
   }
 
   return(dplyr::bind_rows(res))

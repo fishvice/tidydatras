@@ -8,6 +8,8 @@ Imports:
     icesDatras,
     lubridate,
     magrittr,
+    purrr,
+    readr,
     sf,
     stringr,
     tibble,
