@@ -11,7 +11,7 @@ hl <-
 ca <-
   readxl::read_excel(path  = tmp, sheet = "CA")
 
-datras_field_types <-
+dr_coltypes <-
   bind_rows(hh |> select(Field, DataType) |>   mutate(source = "HH"),
             hl |> select(Field, DataType) |>   mutate(source = "HL"),
             ca |> select(Field, DataType) |>   mutate(source = "CA")) |>
@@ -21,4 +21,12 @@ datras_field_types <-
                           DataType == "int" ~ "int")) |>
   select(field = Field, type, record = source)
 
-usethis::use_data(datras_field_types, overwrite = TRUE)
+
+usethis::use_data(dr_coltypes, overwrite = TRUE)
+
+library(sf)
+fao_area <- gisland::read_sf_ftp("FAO_AREAS_CWP_NOCOASTLINE")
+usethis::use_data(fao_area)
+
+ns_ibts_rf <- gisland::read_sf_ftp("NS_IBTS_RF")
+usethis::use_data(ns_ibts_rf)

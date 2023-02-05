@@ -1,0 +1,108 @@
+---
+title: "Workflow example"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(tidyices)
+library(tidyverse)
+```
+
+## Get data and tidy
+
+Note that the dr_getdata can work with multiple surveys (a loop is inside the function)
+
+```{r}
+
+surveys <- c("NS-IBTS", "FR-CGFS")
+yrs <- 2020:2022 
+qs  <- 1:4
+
+hh <- dr_getdata("HH", surveys, yrs, qs) |> dr_tidy()
+hl <- dr_getdata("HL", surveys, yrs, qs) |> dr_tidy()
+ca <- dr_getdata("CA", surveys, yrs, qs) |> dr_tidy()
+```
+
+```{r}
+hh |> count(survey)
+hl |> count(survey)
+ca |> count(survey)
+```
+
+## Thoughts on spatial joins
+
+```{r}
+hh |> 
+  mutate(ns_area = dr_geoinside(shootlong, shootlat, ns_ibts_rf, FID_)) |> 
+  ggplot(aes(shootlong, shootlat, colour = factor(ns_area))) +
+  geom_point() +
+  facet_wrap(~ survey) +
+  scale_colour_brewer(palette = "Set3")
+```
+
+
+## Species - workflow experiments
+
+### Worms
+
+```{r}
+get_latin_worms <- function(aphia) {
+  
+  x <- aphia |> na.omit() |> unique() |> as.integer()
+  from_worms <-
+    # You need an internet connection for this to work
+    worrms::wm_id2name_(id = x) %>%
+    bind_rows() %>%
+    gather(aphia, latin, convert = TRUE)
+  m <- match(aphia |> as.integer(), from_worms$aphia)
+  
+  return(from_worms$latin[m])
+  
+  
+}
+
+system.time(
+  tmp <- 
+    hl |> 
+    mutate(latin = get_latin_worms(valid_aphia))
+)
+```
+
+### ICES vocabulary
+
+```{r}
+get_latin_ices <- function(aphia) {
+  
+  pfix <- "https://datras.ices.dk/WebServices/DATRASWebService.asmx/getSpecies?codename=aphia&code="
+  res <- 
+    tibble::tibble(aphia = aphia |> na.omit() |> unique() |> as.integer()) |> 
+    dplyr::mutate(queary = paste0(pfix, aphia),
+                  raw = map(queary, icesDatras:::readDatras),
+                  parsed = map(raw, icesDatras:::parseDatras)) |> 
+    select(parsed) |> 
+    unnest(parsed) |> 
+    select(aphia, latin = latinname) |> 
+    distinct()
+  m <- match(aphia |> as.integer(), res$aphia)
+  
+  return(res$latin[m])
+  
+}
+
+system.time(
+  tmp2 <- 
+    hl |> 
+    mutate(latin = get_latin_ices(valid_aphia))
+)
+```
+
+
+

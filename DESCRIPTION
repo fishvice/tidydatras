@@ -1,16 +1,14 @@
 Package: tidyices
 Type: Package
-Title: Making working with various ICES data a little smoother
-Version: 0.1.0
+Title: Making working with DATRAS data a little smoother
+Version: 0.2.0
 Authors@R: c(person("Einar", "Hjorleifsson", role=c("aut","cre"), email="einar.hjorleifsson@gmail.com"))
 Imports: 
     dplyr,
     icesDatras,
-    icesVocab,
     lubridate,
     magrittr,
-    purrr,
-    readr,
+    sf,
     stringr,
     tibble,
     tidyr
@@ -22,3 +20,5 @@ LazyData: true
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 4.0.0)
+Suggests: 
+    rmarkdown

@@ -1,6 +1,6 @@
-#' Datras field types
+#' Datras variable types
 #'
-#' A table containing the field types of the datras variables
+#' A table containing the variable (field) types of the datras data
 #'
 #' A data frame with 125 rows and 3 columns:
 #' \describe{
@@ -9,4 +9,20 @@
 #'   \item{record}{The DATRAS data type - "HH": haul data, "HL": length-based data, "CA": age-based data}
 #' }
 #' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
-"datras_field_types"
+"dr_coltypes"
+
+
+#' FAO areas
+#'
+#' A shapefile
+#'
+#' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
+"fao_area"
+
+
+#' North Sea IBTS FS area
+#'
+#' A shapefile, polygons often used in ALK compilations
+#'
+#' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
+"ns_ibts_rf"
