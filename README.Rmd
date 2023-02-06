@@ -9,36 +9,4 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-```{r}
-# devtools::install_github("fishvice/tidyices")
-library(tidyices)
-library(tidyverse)
-
-yrs <- 2017  # years
-qs <- c(1)   # quarters
-
-hh <-
-  icesDatras::getDATRAS(record = "HH",
-                        survey = "NS-IBTS",
-                        years = yrs,
-                        quarters = qs) %>%
-  dtrs_tidy_hh()
-glimpse(hh)
-
-hl <-
-  icesDatras::getDATRAS(record = "HL",
-                        survey = "NS-IBTS",
-                        years = yrs,
-                        quarters = qs) %>%
-  dtrs_tidy_hl(hh)
-glimpse(hl)
-
-ca <-
-  icesDatras::getDATRAS(record = "CA",
-                        survey = "NS-IBTS",
-                        years = yrs,
-                        quarters = qs) %>%
-  dtrs_tidy_ca()
-glimpse(ca)
-```
-
+... updates pending
