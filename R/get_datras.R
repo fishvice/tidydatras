@@ -30,8 +30,8 @@ dr_getoverview <- function(surveys) {
 
 dr_settypes <- function(d) {
 
-  key_int <- dr_coltypes |> filter(type == "int") |> pull(field) |> unique()
-  key_dbl <- dr_coltypes |> filter(type == "dbl") |> pull(field) |> unique()
+  key_int <- dr_coltypes |> dplyr::filter(type == "int") |> dplyr::pull(field) |> unique()
+  key_dbl <- dr_coltypes |> dplyr::filter(type == "dbl") |> dplyr::pull(field) |> unique()
 
   d <-
     d %>%

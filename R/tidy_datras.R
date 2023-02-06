@@ -57,7 +57,11 @@ dr_tidyhl <- function(d) {
     d |>
     # length class to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
-                  hlnoatlngt = hlnoatlngt * subfactor)
+                  hlnoatlngt = hlnoatlngt * subfactor,
+                  aphia = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
+                                           speccodetype == "W" ~ speccode,
+                                           TRUE ~ NA_character_),
+                  aphia = as.integer(aphia))
 
   return(d)
 
@@ -75,7 +79,11 @@ dr_tidyca <- function(d) {
     d %>%
     # turn everything to cm
     dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
-                  indwgt = ifelse(indwgt <= 0, NA, indwgt))
+                  indwgt = ifelse(indwgt <= 0, NA, indwgt),
+                  aphia = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
+                                           speccodetype == "W" ~ speccode,
+                                           TRUE ~ NA_character_),
+                  aphia = as.integer(aphia))
 
 
   return(d)

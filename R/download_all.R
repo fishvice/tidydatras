@@ -4,6 +4,8 @@
 #' Download all DATRAS data
 #'
 #' Saves rds files of all surveys HH, HL and CA data into a specified directory.
+#' This takes a while so suggest to run this function in an R-script that is run via
+#' nohub or "RStudio Background Jobs".
 #'
 #' @param save_dir The path to the directory where data are to be stored
 #' @param verbose boolean (default TRUE) that prints out survey being worked on

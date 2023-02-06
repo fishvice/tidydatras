@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+# remotes::install_github("fishvice/tidyices", ref = "dev")
 library(tidyices)
 library(tidyverse)
 ```
@@ -37,72 +38,16 @@ hl |> count(survey)
 ca |> count(survey)
 ```
 
-## Thoughts on spatial joins
-
-```{r}
-hh |> 
-  mutate(ns_area = dr_geoinside(shootlong, shootlat, ns_ibts_rf, FID_)) |> 
-  ggplot(aes(shootlong, shootlat, colour = factor(ns_area))) +
-  geom_point() +
-  facet_wrap(~ survey) +
-  scale_colour_brewer(palette = "Set3")
-```
-
 
 ## Species - workflow experiments
 
-### Worms
-
 ```{r}
-get_latin_worms <- function(aphia) {
-  
-  x <- aphia |> na.omit() |> unique() |> as.integer()
-  from_worms <-
-    # You need an internet connection for this to work
-    worrms::wm_id2name_(id = x) %>%
-    bind_rows() %>%
-    gather(aphia, latin, convert = TRUE)
-  m <- match(aphia |> as.integer(), from_worms$aphia)
-  
-  return(from_worms$latin[m])
-  
-  
-}
-
-system.time(
-  tmp <- 
-    hl |> 
-    mutate(latin = get_latin_worms(valid_aphia))
-)
+hl |> 
+  left_join(aphia_latin) |> 
+  count(latin)
+ca |> 
+  left_join(aphia_latin) |> 
+  count(latin)
 ```
-
-### ICES vocabulary
-
-```{r}
-get_latin_ices <- function(aphia) {
-  
-  pfix <- "https://datras.ices.dk/WebServices/DATRASWebService.asmx/getSpecies?codename=aphia&code="
-  res <- 
-    tibble::tibble(aphia = aphia |> na.omit() |> unique() |> as.integer()) |> 
-    dplyr::mutate(queary = paste0(pfix, aphia),
-                  raw = map(queary, icesDatras:::readDatras),
-                  parsed = map(raw, icesDatras:::parseDatras)) |> 
-    select(parsed) |> 
-    unnest(parsed) |> 
-    select(aphia, latin = latinname) |> 
-    distinct()
-  m <- match(aphia |> as.integer(), res$aphia)
-  
-  return(res$latin[m])
-  
-}
-
-system.time(
-  tmp2 <- 
-    hl |> 
-    mutate(latin = get_latin_ices(valid_aphia))
-)
-```
-
 
 

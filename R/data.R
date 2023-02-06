@@ -11,6 +11,16 @@
 #' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
 "dr_coltypes"
 
+#' Latin names for aphia code
+#'
+#' A data frame with 2011 rows and 2 columns:
+#' \describe{
+#'   \item{aphia}{aphia code}
+#'   \item{latin}{Latin name}
+#' }
+#'
+"aphia_latin"
+
 
 #' FAO areas
 #'

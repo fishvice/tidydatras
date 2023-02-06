@@ -13,4 +13,6 @@ dr_download_all(save_dir, verbose = TRUE)
 }
 \description{
 Saves rds files of all surveys HH, HL and CA data into a specified directory.
+This takes a while so suggest to run this function in an R-script that is run via
+nohub or "RStudio Background Jobs".
 }
