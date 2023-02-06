@@ -21,18 +21,3 @@
 #'
 "aphia_latin"
 
-
-#' FAO areas
-#'
-#' A shapefile
-#'
-#' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
-"fao_area"
-
-
-#' North Sea IBTS FS area
-#'
-#' A shapefile, polygons often used in ALK compilations
-#'
-#' @source <https://www.ices.dk/data/Documents/DATRAS/DATRAS_Field_descriptions_and_example_file_May2022.xlsx>
-"ns_ibts_rf"

@@ -10,7 +10,6 @@ Imports:
     magrittr,
     purrr,
     readr,
-    sf,
     stringr,
     tibble,
     tidyr
