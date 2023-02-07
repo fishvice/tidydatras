@@ -4,7 +4,7 @@
 \alias{dr_getdata}
 \title{Get any DATRAS data}
 \usage{
-dr_getdata(record = "HH", surveys, years, quarters)
+dr_getdata(record = "HH", surveys, years, quarters, quiet = TRUE)
 }
 \arguments{
 \item{record}{the data type required: "HH" haul data, "HL" length-based data, "CA" age-based data.}
@@ -14,6 +14,8 @@ dr_getdata(record = "HH", surveys, years, quarters)
 \item{years}{a vector of years of the survey, e.g. c(2010, 2012) or 2005:2010.}
 
 \item{quarters}{a vector of quarters of the year the survey took place, i.e. c(1, 4) or 1:4.}
+
+\item{quiet}{A boolean (default TRUE), if FALSE then information on download process is displayed.}
 }
 \value{
 A tibble
