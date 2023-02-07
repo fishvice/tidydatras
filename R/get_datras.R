@@ -52,12 +52,12 @@ dr_settypes <- function(d) {
 #' @param surveys the survey acronym e.g. NS-IBTS
 #' @param years a vector of years of the survey, e.g. c(2010, 2012) or 2005:2010.
 #' @param quarters a vector of quarters of the year the survey took place, i.e. c(1, 4) or 1:4.
-#' @param quiet A boolean (default TRUE), if FALSE then information on download process is displayed.
+#' @param quiet whether to prevent messages from being shown on screen (default is TRUE).
 #'
 #' @return A tibble
 #' @export
 #'
-dr_getdata <- function(record = "HH", surveys, years, quarters, quiet = TRUE) {
+dr_getdata <- function(record = "HH", surveys, years, quarters, quiet=TRUE) {
 
   res <- list()
   counter <- 0
@@ -74,9 +74,9 @@ dr_getdata <- function(record = "HH", surveys, years, quarters, quiet = TRUE) {
     } else {
       d <-
         icesDatras::getDATRAS(record   = record,
-                              survey   = survey,
-                              years    = years,
-                              quarters = quarters)
+                                         survey   = survey,
+                                         years    = years,
+                                         quarters = quarters)
     }
 
     if(!is.null(d)) res[[counter]] <- d |> dr_settypes()
