@@ -48,7 +48,7 @@ dr_calccpue_hl <- function(d, hh) {
 
 }
 
-#' dr_calccpue_hl
+#' dr_calccpue_ca
 #'
 #' @param d DATRAS raw length dataframe, as obtained via the function
 #' icesDatras::getDATRAS
@@ -68,8 +68,8 @@ dr_calccpue_ca <- function(d, hh) {
 
     # catch per hour
     dplyr::mutate(nperhour = dplyr::case_when(
-      datatype == "R"  ~ canoatlngt * 60 / hauldur,
-      datatype == "C"  ~ canoatlngt,
+      datatype == "R"  ~ as.numeric(canoatlngt) * 60 / hauldur,
+      datatype == "C"  ~ as.numeric(canoatlngt),
       TRUE             ~ as.numeric(NA)))
 
     return(d)
