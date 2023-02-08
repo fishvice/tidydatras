@@ -21,3 +21,16 @@
 #'
 "aphia_latin"
 
+#' FAO species codes
+#'
+#' A data frame with 13417 rows and 5 columns:
+#' \describe{
+#'   \item{species}{FAO 3-letter code}
+#'   \item{latin}{Latin name}
+#'   \item{english_name}{English name}
+#'   \item{family}{Family}
+#'   \item{order}{Order}
+#' }
+#' @source <https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip>
+"afsis"
+
