@@ -15,7 +15,7 @@ dr_getdata(record = "HH", surveys, years, quarters, quiet = TRUE)
 
 \item{quarters}{a vector of quarters of the year the survey took place, i.e. c(1, 4) or 1:4.}
 
-\item{quiet}{A boolean (default TRUE), if FALSE then information on download process is displayed.}
+\item{quiet}{whether to prevent messages from being shown on screen (default is TRUE).}
 }
 \value{
 A tibble
