@@ -7,8 +7,9 @@
 dr_calccpue_ca(d, hh)
 }
 \arguments{
-\item{d}{DATRAS raw length dataframe, as obtained via the function
-icesDatras::getDATRAS}
+\item{d}{A tidy ca object obtained from tidyices::dr_getdata}
+
+\item{hh}{A tidy haul object obtained from tidyices::dr_getdata}
 }
 \value{
 A tibble

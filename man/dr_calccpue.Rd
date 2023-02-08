@@ -7,10 +7,12 @@
 dr_calccpue(d, hh)
 }
 \arguments{
+\item{d}{A tidy hl or ca object obtained from tidyices::dr_getdata}
+
 \item{hh}{A tidy haul object obtained from tidyices::dr_getdata}
 }
 \value{
-A tibble of the same dimention as the input
+A tibble of the same dimension as the input
 }
 \description{
 Calculate with DATRAS data
