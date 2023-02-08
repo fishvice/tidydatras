@@ -9,7 +9,9 @@
 #' @export
 dr_idunite <- function(d, remove = TRUE) {
   d %>%
-    tidyr::unite(id, year, quarter, ship, gear, haulno, remove = remove)
+    tidyr::unite(col="id",
+                 survey, year, quarter, country, ship, gear, haulno,
+                 remove = remove)
 }
 
 
@@ -25,7 +27,8 @@ dr_idunite <- function(d, remove = TRUE) {
 #' @export
 dr_idseparate <- function(d, remove = TRUE) {
   d %>%
-    tidyr::separate(id, c("year", "quarter", "ship", "gear", "haulno"),
+    tidyr::separate(id,
+                    c("survey", "year", "quarter", "country", "ship", "gear", "haulno"),
                     remove = remove,
                     convert = TRUE)
 }
