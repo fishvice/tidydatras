@@ -32,5 +32,5 @@
 #'   \item{order}{Order}
 #' }
 #' @source <https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip>
-"afsis"
+"asfis"
 
