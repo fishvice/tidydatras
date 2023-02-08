@@ -15,16 +15,18 @@ library(icesDatras)  # install.packages("icesDatras")
 
 library(tidyices) # remotes::install_github("fishvice/tidyices", ref = "dev")
 
-# source("../tidyices/R/get_datras.R")
-# source("../tidyices/R/id_generator.R")
-# source("../tidyices/R/calc_datras.R")
+source("../tidyices/R/get_datras.R")
+source("../tidyices/R/id_generator.R")
+source("../tidyices/R/calc_datras.R")
+
+afsis <- read_rds(file = "data/afsis.rds") %>% dplyr::select(latin, species, english_name, dutch_name)
 
 # ---------------------------------------------------------------------------------------------
 # Selections
 # ---------------------------------------------------------------------------------------------
 
 surveys <- c("NS-IBTS", "FR-CGFS")
-yrs <- 2020:2022
+yrs <- 1990:2022
 qs  <- 1:4
 
 hh <-
@@ -37,6 +39,7 @@ hl <-
   dr_tidy() %>%
   dr_idunite(., remove = FALSE) %>%
   left_join(aphia_latin) %>%
+  left_join(afsis) %>%
   dr_calccpue(hh)
 
 ca <-
@@ -44,5 +47,6 @@ ca <-
   dr_tidy() %>%
   dr_idunite(., remove = FALSE) %>%
   left_join(aphia_latin) %>%
+  left_join(afsis) %>%
   dr_calccpue(hh)
 
