@@ -5,7 +5,7 @@
 \alias{reco}
 \title{RECO vessel codes}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 12962 rows and 2 columns.
+An object of class \code{data.frame} with 12962 rows and 2 columns.
 }
 \source{
 <https://vocab.ices.dk/?ref=315>
