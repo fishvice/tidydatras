@@ -34,3 +34,12 @@
 #' @source <https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip>
 "asfis"
 
+#' RECO vessel codes
+#'
+#' A data frame with 12962 rows and 2 columns:
+#' \describe{
+#'   \item{code}{Vessel code}
+#'   \item{vessel}{Vessel name}
+#' }
+#' @source <https://vocab.ices.dk/?ref=315>
+"reco"
