@@ -2,8 +2,8 @@ Package: tidyices
 Type: Package
 Title: Making working with DATRAS data a little smoother
 Version: 0.2.0
-Authors@R: c(person("Einar", "Hjorleifsson", role=c("aut","cre"), email="einar.hjorleifsson@gmail.com"),
-             person("Martin", "Pastoors"   , role=c("aut","cre"), email="martin.pastoors@gmail.com"))
+Authors@R: c(person("Einar", "Hjorleifsson", role=c("cre"), email="einar.hjorleifsson@gmail.com"),
+             person("Martin", "Pastoors"   , role=c("aut"), email="martin.pastoors@gmail.com"))
 Imports: 
     dplyr,
     icesDatras,
