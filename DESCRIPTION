@@ -1,4 +1,4 @@
-Package: tidyices
+Package: tidydatras
 Type: Package
 Title: Making working with DATRAS data a little smoother
 Version: 0.2.0
