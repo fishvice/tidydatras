@@ -21,7 +21,7 @@ library(tidyverse)
 
 Note that the dr_getdata can work with multiple surveys (a loop is inside the function)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 surveys <- c("NS-IBTS", "FR-CGFS")
 yrs <- 2020:2022 
 qs  <- 1:4
