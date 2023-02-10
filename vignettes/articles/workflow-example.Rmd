@@ -13,8 +13,9 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 # remotes::install_github("fishvice/tidyices", ref = "dev")
-library(tidyices)
+library(tidydatras) # remotes::install_github("fishvice/tidydatras")
 library(tidyverse)
+library(DescTools)  # e.g. winsorize function
 ```
 
 ## Get data and tidy
@@ -24,11 +25,31 @@ Note that the dr_getdata can work with multiple surveys (a loop is inside the fu
 ```{r message=FALSE, warning=FALSE}
 surveys <- c("NS-IBTS", "FR-CGFS")
 yrs <- 2020:2022 
-qs  <- 1:4
+qs  <- c(1,4)
 
-hh <- dr_getdata("HH", surveys, yrs, qs) |> dr_tidy()
-hl <- dr_getdata("HL", surveys, yrs, qs) |> dr_tidy()
-ca <- dr_getdata("CA", surveys, yrs, qs) |> dr_tidy()
+hh <- dr_getdata("HH", surveys, yrs, qs) %>% 
+  dr_tidy() %>%                             # Make tidy with column specifications
+  dr_idunite(., remove = FALSE) %>%         # Add identifier
+  left_join(reco, by=c("ship"="code"))      # Add vesselname
+
+hl <- dr_getdata("HL", surveys, yrs, qs) %>% 
+  dr_tidy() %>%                             # Make tidy with column specifications
+  dr_idunite(., remove = FALSE) %>%         # Add identifier
+  dr_calccpue(hh) %>%                       # Calculated CPUE per hour
+  left_join(aphia_latin) %>%                # Add scientific name
+  left_join(asfis) %>%                      # Add FAO species names and codes
+  left_join(reco, by=c("ship"="code"))      # Add vesselname
+
+
+ca <- dr_getdata("CA", surveys, yrs, qs, quiet=FALSE) %>%  
+  dr_tidy() %>%                             # Make tidy with column specifications
+  dr_idunite(., remove = FALSE) %>%         # Add identifier
+  dr_calccpue(hh) %>%                       # Calculated CPUE per hour
+  left_join(aphia_latin) %>%                # Add scientific name
+  left_join(asfis) %>%                      # Add FAO species names and codes
+  left_join(reco, by=c("ship"="code"))      # Add vesselname
+
+  
 ```
 
 ```{r}
@@ -49,4 +70,41 @@ ca |>
   count(latin)
 ```
 
+## Length frequencies plots
+
+```{r message=FALSE, warning=FALSE}
+
+select_species <- "HER"
+select_survey  <- "NS-IBTS"
+select_quarter <- 1
+winsorize      <- c(0.05, 0.95)
+length_step    <- 0.5
+
+df <-
+  hl %>% 
+  filter(species == select_species) %>% 
+  filter(survey == select_survey) %>% 
+  filter(quarter == select_quarter) %>%
+  drop_na(nperhour, length) %>% 
+  mutate(length=floor(1/length_step * length)/(1/length_step)) %>% 
+  {if(!is.null(winsorize)) {mutate(., nperhour = DescTools::Winsorize(nperhour, probs=winsorize))}} %>% 
+  group_by(species, latin, year, quarter, statrec, length) %>% 
+  summarise(nperhour = mean(nperhour)) %>% 
+  group_by(species, latin, year, quarter, length) %>% 
+  summarise(nperhour = mean(nperhour)) 
+
+yearmean <-
+  df %>% 
+  group_by(species, latin, quarter, length) %>% 
+  summarise(nperhour = mean(nperhour)) 
+
+df %>% 
+  ggplot(aes(x=length, y=nperhour)) +
+  theme_minimal() +
+  geom_bar(data=yearmean, stat="identity", fill="gray", alpha=0.5) +
+  geom_line() +
+  facet_wrap(~year, strip.position = "right", dir="v", ncol=3)
+
+
+```
 
