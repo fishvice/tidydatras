@@ -117,3 +117,12 @@ reco <-
 save(reco, file="data/reco.rda")
 usethis::use_data(reco, overwrite=TRUE)
 
+## ICES rectangle weights for IBTS index calculation -------------------------------------------------
+## Annex 3 in https://www.ices.dk/data/Documents/DATRAS/Indices_Calculation_Steps_IBTS.pdf
+
+ibts_rect <-
+  read.csv(file="data-raw/ibts_rects.csv")  %>%
+  dplyr::rename_all(tolower)
+
+save(ibts_rect, file="data/ibts_rect.rda")
+usethis::use_data(ibts_rect, overwrite=TRUE)

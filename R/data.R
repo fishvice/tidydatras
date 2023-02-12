@@ -43,3 +43,13 @@
 #' }
 #' @source <https://vocab.ices.dk/?ref=315>
 "reco"
+
+#' IBTS rect data
+#'
+#' A data frame with 211 rows and 2 columns:
+#' \describe{
+#'   \item{statrec}{ICES Statistical Rectangle}
+#'   \item{weight}{Weight of rectangle in index calculation}
+#' }
+#' @source <https://www.ices.dk/data/Documents/DATRAS/Indices_Calculation_Steps_IBTS.pdf>
+"ibts_rect"
