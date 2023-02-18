@@ -23,9 +23,9 @@ library(DescTools)  # e.g. winsorize function
 Note that the dr_getdata can work with multiple surveys (a loop is inside the function)
 
 ```{r message=FALSE, warning=FALSE}
-surveys <- c("NS-IBTS", "FR-CGFS")
+surveys <- c("NS-IBTS")
 yrs <- 2020:2022 
-qs  <- c(1,4)
+qs  <- c(1)
 
 hh <- dr_getdata("HH", surveys, yrs, qs) %>% 
   dr_tidy() %>%                             # Make tidy with column specifications
