@@ -36,7 +36,7 @@ dr_calccpue_hl <- function(d, hh) {
 
     #left join hh
     dplyr::left_join(hh %>% dplyr::select(id,
-                                          datatype, hauldur, statrec, shootlon, shootlat),
+                                          datatype, hauldur, statrec, shootlong, shootlat),
                      by = "id") |>
 
     # catch per hour
@@ -64,7 +64,7 @@ dr_calccpue_ca <- function(d, hh) {
 
     #left join hh
     dplyr::left_join(hh %>% dplyr::select(id,
-                                          datatype, hauldur, statrec, shootlon, shootlat),
+                                          datatype, hauldur, statrec, shootlong, shootlat),
                      by = "id") |>
 
     # catch per hour
