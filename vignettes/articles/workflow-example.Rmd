@@ -85,21 +85,21 @@ df <-
   filter(species == select_species) %>% 
   filter(survey == select_survey) %>% 
   filter(quarter == select_quarter) %>%
-  drop_na(nperhour, length) %>% 
+  drop_na(cpue_number_per_hour, length) %>% 
   mutate(length=floor(1/length_step * length)/(1/length_step)) %>% 
-  {if(!is.null(winsorize)) {mutate(., nperhour = DescTools::Winsorize(nperhour, probs=winsorize))}} %>% 
+  {if(!is.null(winsorize)) {mutate(., cpue_number_per_hour = DescTools::Winsorize(cpue_number_per_hour, probs=winsorize))}} %>% 
   group_by(species, latin, year, quarter, statrec, length) %>% 
-  summarise(nperhour = mean(nperhour)) %>% 
+  summarise(cpue_number_per_hour = mean(cpue_number_per_hour)) %>% 
   group_by(species, latin, year, quarter, length) %>% 
-  summarise(nperhour = mean(nperhour)) 
+  summarise(cpue_number_per_hour = mean(cpue_number_per_hour)) 
 
 yearmean <-
   df %>% 
   group_by(species, latin, quarter, length) %>% 
-  summarise(nperhour = mean(nperhour)) 
+  summarise(cpue_number_per_hour = mean(cpue_number_per_hour)) 
 
 df %>% 
-  ggplot(aes(x=length, y=nperhour)) +
+  ggplot(aes(x=length, y=cpue_number_per_hour)) +
   theme_minimal() +
   geom_bar(data=yearmean, stat="identity", fill="gray", alpha=0.5) +
   geom_line() +

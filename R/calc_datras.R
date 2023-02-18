@@ -40,7 +40,7 @@ dr_calccpue_hl <- function(d, hh) {
                      by = "id") |>
 
     # catch per hour
-    dplyr::mutate(nperhour = dplyr::case_when(
+    dplyr::mutate(cpue_number_per_hour = dplyr::case_when(
          datatype == "R"  ~ hlnoatlngt * 60 / hauldur,
          datatype == "C"  ~ hlnoatlngt,
          TRUE             ~ as.numeric(NA)))
@@ -68,7 +68,7 @@ dr_calccpue_ca <- function(d, hh) {
                      by = "id") |>
 
     # catch per hour
-    dplyr::mutate(nperhour = dplyr::case_when(
+    dplyr::mutate(cpue_number_per_hour = dplyr::case_when(
       datatype == "R"  ~ as.numeric(canoatlngt) * 60 / hauldur,
       datatype == "C"  ~ as.numeric(canoatlngt),
       TRUE             ~ as.numeric(NA)))
