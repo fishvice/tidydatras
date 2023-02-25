@@ -24,10 +24,10 @@ Note that the dr_getdata can work with multiple surveys (a loop is inside the fu
 
 ```{r message=FALSE, warning=FALSE}
 surveys <- c("NS-IBTS")
-yrs <- 2020:2022 
-qs  <- c(1)
+yrs <- 2000:2022 
+qs  <- c(3)
 
-hh <- dr_getdata("HH", surveys, yrs, qs) %>% 
+hh <- dr_getdata("HH", surveys, yrs, qs, quiet = FALSE) %>% 
   dr_tidy() %>%                             # Make tidy with column specifications
   dr_idunite(., remove = FALSE) %>%         # Add identifier
   left_join(reco, by=c("ship"="code"))      # Add vesselname
@@ -40,16 +40,92 @@ hl <- dr_getdata("HL", surveys, yrs, qs) %>%
   left_join(asfis) %>%                      # Add FAO species names and codes
   left_join(reco, by=c("ship"="code"))      # Add vesselname
 
+# 
+# ca <- dr_getdata("CA", surveys, yrs, qs, quiet=FALSE) %>%  
+#   dr_tidy() %>%                             # Make tidy with column specifications
+#   dr_idunite(., remove = FALSE) %>%         # Add identifier
+#   dr_calccpue(hh) %>%                       # Calculated CPUE per hour
+#   left_join(aphia_latin) %>%                # Add scientific name
+#   left_join(asfis) %>%                      # Add FAO species names and codes
+#   left_join(reco, by=c("ship"="code"))      # Add vesselname
 
-ca <- dr_getdata("CA", surveys, yrs, qs, quiet=FALSE) %>%  
-  dr_tidy() %>%                             # Make tidy with column specifications
-  dr_idunite(., remove = FALSE) %>%         # Add identifier
-  dr_calccpue(hh) %>%                       # Calculated CPUE per hour
-  left_join(aphia_latin) %>%                # Add scientific name
-  left_join(asfis) %>%                      # Add FAO species names and codes
-  left_join(reco, by=c("ship"="code"))      # Add vesselname
+res <- list()
+for(y in 1:length(yrs)) {
+  print(yrs[y])
+  res[[y]] <-
+    icesDatras::getCPUELength(surveys, year = yrs[y], quarter = qs) |>
+    as_tibble() |>
+    rename_all(tolower) |>
+    unite("id", survey, year, quarter, ship, gear, haulno, subarea, remove = FALSE) |>
+    select(id, year, lon = shootlon, lat = shootlat, latin = species,
+           length = lngtclas, n = cpue_number_per_hour) |>
+    mutate(length = as.integer(floor(length / 10))) |>
+    group_by(id, year, lon, lat, latin, length) |>
+    summarise(n = sum(n),
+              .groups = "drop")
+}
+st <-
+  res |>
+  bind_rows() |>
+  select(id, year, lon, lat) |>
+  distinct() |>
+  group_by(year) |>
+  mutate(n.tows = n_distinct(id)) |>
+  ungroup()
 
-  
+year.min <- min(st$year)
+year.max <- max(st$year)
+
+# Check if we get a unique id:
+if(!st |> nrow() == st |> distinct(id, .keep_all = TRUE) |> nrow()) {
+  warning("This is unexpected, check the code")
+}
+
+st <-
+  st |>
+  group_by(id) |>
+  slice(1) |>
+  ungroup()
+
+le <-
+  res |>
+  bind_rows() |>
+  select(id, year, lon, lat, latin, length, n) |>
+  filter(length > 0) |>
+  # get rid of species where cpue is always zero
+  group_by(latin) |>
+  mutate(n.sum = sum(n)) |>
+  ungroup() |>
+  filter(n.sum > 0) |>
+  select(-n.sum)
+
+myspecies <- "Pleuronectes platessa"
+t <-
+  bind_rows(
+    hl %>% 
+      filter(latin == myspecies) %>% 
+      mutate(year=as.integer(year)) %>% 
+      group_by(id, year) %>% 
+      summarise(n = sum(cpue_number_per_hour, na.rm=TRUE)) %>% 
+      group_by(year) %>% 
+      summarise(n=mean(n, na.rm=TRUE)) %>% 
+      mutate(source="hl"),
+    le %>% 
+      filter(latin == myspecies) %>% 
+      group_by(id, year) %>% 
+      summarise(n = sum(n, na.rm=TRUE)) %>% 
+      group_by(year) %>% 
+      summarise(n=mean(n, na.rm=TRUE)) %>% 
+      mutate(source="cpue")
+  )
+
+t %>% 
+  ggplot(aes(x=year, y=n)) +
+  theme_bw() +
+  geom_line(aes(colour=source)) +
+  expand_limits(y=0) +
+  labs(title=myspecies)
+
 ```
 
 ```{r}
