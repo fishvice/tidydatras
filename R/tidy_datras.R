@@ -36,7 +36,8 @@ dr_tidyhh <- function(d) {
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
-                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot)))
+                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot))) |>
+    dplyr::filter(haulval == "V")
 
   return(d)
 
