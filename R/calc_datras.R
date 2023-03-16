@@ -36,14 +36,14 @@ dr_calccpue_hl <- function(d, hh) {
 
     #left join hh
     dplyr::left_join(hh %>% dplyr::select(id,
-                                          datatype, hauldur, statrec, shootlong, shootlat),
+                                          datatype, hauldur, statrec, shootlong, shootlat, haulval),
                      by = "id") |>
 
     # catch per hour
     dplyr::mutate(cpue_number_per_hour = dplyr::case_when(
-         datatype == "R"  ~ hlnoatlngt * 60 / hauldur,
-         datatype == "C"  ~ hlnoatlngt,
-         TRUE             ~ as.numeric(NA)))
+         datatype %in% c("S", "R")  ~ hlnoatlngt * 60 / hauldur,
+         datatype == "C"            ~ hlnoatlngt,
+         TRUE                       ~ as.numeric(NA)))
 
   return(d)
 

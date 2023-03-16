@@ -9,6 +9,8 @@ dr_tidy <- function(d) {
 
   colnames(d) <- tolower(colnames(d))
 
+  d[d == -9] <- NA                      # convert all -9 to NA
+
   d <- d |> tibble::as_tibble()
 
   type <- d$recordtype[1]
@@ -56,12 +58,21 @@ dr_tidyhl <- function(d) {
 
   d <-
     d |>
+
+    # remove records without lengthclass or without numbers at length
+    dplyr::filter(!is.na(lngtclass), !is.na(hlnoatlngt) ) |>
+
     # length class to cm
-    dplyr::mutate(length = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass),
-                  hlnoatlngt = hlnoatlngt * subfactor,
-                  aphia = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
-                                           speccodetype == "W" ~ speccode,
-                                           TRUE ~ NA_character_),
+    dplyr::mutate(length     = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass)) |>
+
+    # apply subfactor
+    dplyr::mutate(subfactor = ifelse(is.na(subfactor),1, subfactor)) |>
+    dplyr::mutate(hlnoatlngt = hlnoatlngt * subfactor) |>
+
+    # finalize aphia
+    dplyr::mutate(aphia      = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
+                                                speccodetype                      == "W" ~ speccode,
+                                                TRUE                                     ~ NA_character_),
                   aphia = as.integer(aphia))
 
   return(d)
