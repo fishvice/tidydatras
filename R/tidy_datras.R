@@ -38,7 +38,8 @@ dr_tidyhh <- function(d) {
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
-                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot))) |>
+                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot)),
+                  year = as.integer(year)) |>
     dplyr::filter(haulval == "V")
 
   return(d)
@@ -73,7 +74,8 @@ dr_tidyhl <- function(d) {
     dplyr::mutate(aphia      = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                                                 speccodetype                      == "W" ~ speccode,
                                                 TRUE                                     ~ NA_character_),
-                  aphia = as.integer(aphia))
+                  aphia = as.integer(aphia),
+                  year = as.integer(year))
 
   return(d)
 
@@ -95,7 +97,8 @@ dr_tidyca <- function(d) {
                   aphia = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                                            speccodetype == "W" ~ speccode,
                                            TRUE ~ NA_character_),
-                  aphia = as.integer(aphia))
+                  aphia = as.integer(aphia),
+                  year = as.integer(year))
 
 
   return(d)
