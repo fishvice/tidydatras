@@ -3,7 +3,7 @@
 #' @param survey_quarter like "NS-IBTS_3"
 #' @param years like "2000:2022"
 #'
-#' @return
+#' @return a tibble
 #' @export
 #'
 dr_doodle <- function(survey_quarter = "FR-CGFS_4", years = 1989:2022) {

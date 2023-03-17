@@ -2,6 +2,7 @@
 
 export("%>%")
 export(dr_calccpue)
+export(dr_doodle)
 export(dr_getdata)
 export(dr_getoverview)
 export(dr_idseparate)
