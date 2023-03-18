@@ -1,6 +1,6 @@
 #' Tidy DATRAS data
 #'
-#' @param d An object obtained from tidyices::dr_getdata or icesDatras::getDATRAS
+#' @param d An object obtained from tidydatras::dr_getdata or icesDatras::getDATRAS
 #'
 #' @return A tibble of the same dimention as the input
 #' @export
@@ -26,7 +26,7 @@ dr_tidy <- function(d) {
 
 #' dr_tidyhh
 #'
-#' @param d DATRAS raw haul dataframe, as obtained via the function tidyices::
+#' @param d DATRAS raw haul dataframe, as obtained via the function tidydatras::
 #'
 #' @return a tibble
 #'

@@ -7,9 +7,9 @@
 dr_calccpue_ca(d, hh)
 }
 \arguments{
-\item{d}{A tidy ca object obtained from tidyices::dr_getdata}
+\item{d}{A tidy ca object obtained from tidydatras::dr_getdata}
 
-\item{hh}{A tidy haul object obtained from tidyices::dr_getdata}
+\item{hh}{A tidy haul object obtained from tidydatras::dr_getdata}
 }
 \value{
 A tibble

@@ -31,7 +31,7 @@ usethis::use_data(dr_coltypes, overwrite = TRUE)
 ## get all combination of speccodetype, speccode and valid_aphia --------------
 fil <- fs::dir_ls("~/stasi/datras/data-raw/datras", glob = "*_hl.rds")
 hl <-
-  map_df(fil, read_rds) |> tidyices::dr_tidy() |>
+  map_df(fil, read_rds) |> tidydatras::dr_tidy() |>
   mutate(aphia = case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                            speccodetype == "W" ~ speccode,
                            TRUE ~ NA_character_),
@@ -39,7 +39,7 @@ hl <-
 fil <- fs::dir_ls("~/stasi/datras/data-raw/datras", glob = "*_ca.rds")
 ca <-
   map_df(fil, read_rds) |>
-  tidyices::dr_tidy() |>
+  tidydatras::dr_tidy() |>
   mutate(aphia = case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                            speccodetype == "W" ~ speccode,
                            TRUE ~ NA_character_),

@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-# remotes::install_github("fishvice/tidyices", ref = "dev")
+# remotes::install_github("fishvice/tidydatras", ref = "dev")
 library(tidydatras) # remotes::install_github("fishvice/tidydatras")
 library(tidyverse)
 library(DescTools)  # e.g. winsorize function
