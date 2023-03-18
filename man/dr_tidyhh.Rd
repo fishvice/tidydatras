@@ -7,7 +7,7 @@
 dr_tidyhh(d)
 }
 \arguments{
-\item{d}{DATRAS raw haul dataframe, as obtained via the function tidyices::}
+\item{d}{DATRAS raw haul dataframe, as obtained via the function tidydatras::}
 }
 \value{
 a tibble

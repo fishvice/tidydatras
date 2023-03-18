@@ -1,7 +1,7 @@
 #' Calculate with DATRAS data
 #'
-#' @param d A tidy hl or ca object obtained from tidyices::dr_getdata
-#' @param hh A tidy haul object obtained from tidyices::dr_getdata
+#' @param d A tidy hl or ca object obtained from tidydatras::dr_getdata
+#' @param hh A tidy haul object obtained from tidydatras::dr_getdata
 #'
 #' @return A tibble of the same dimension as the input
 #' @export
@@ -23,8 +23,8 @@ dr_calccpue <- function(d, hh) {
 
 #' dr_calccpue_hl
 #'
-#' @param d A tidy hl object obtained from tidyices::dr_getdata
-#' @param hh A tidy haul object obtained from tidyices::dr_getdata
+#' @param d A tidy hl object obtained from tidydatras::dr_getdata
+#' @param hh A tidy haul object obtained from tidydatras::dr_getdata
 #'
 #' @return A tibble
 #'
@@ -51,8 +51,8 @@ dr_calccpue_hl <- function(d, hh) {
 
 #' dr_calccpue_ca
 #'
-#' @param d A tidy ca object obtained from tidyices::dr_getdata
-#' @param hh A tidy haul object obtained from tidyices::dr_getdata
+#' @param d A tidy ca object obtained from tidydatras::dr_getdata
+#' @param hh A tidy haul object obtained from tidydatras::dr_getdata
 #'
 #' @return A tibble
 #'

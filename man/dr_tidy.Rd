@@ -7,7 +7,7 @@
 dr_tidy(d)
 }
 \arguments{
-\item{d}{An object obtained from tidyices::dr_getdata or icesDatras::getDATRAS}
+\item{d}{An object obtained from tidydatras::dr_getdata or icesDatras::getDATRAS}
 }
 \value{
 A tibble of the same dimention as the input
