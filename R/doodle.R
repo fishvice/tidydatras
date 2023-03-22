@@ -20,7 +20,7 @@ dr_doodle <- function(survey_quarter = "FR-CGFS_4", years = 1989:2022) {
     dplyr::left_join(reco, by=c("ship" = "code"))  # Add vesselname
 
   HL <-
-    tidyices::dr_getdata("HL", s, 1989:2022, q)
+    tidyices::dr_getdata("HL", s, years, q)
   hl <-
     HL |>
     dr_tidy() %>%                               # Make tidy with column specifications
