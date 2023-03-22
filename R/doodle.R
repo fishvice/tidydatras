@@ -6,7 +6,7 @@
 #' @return a tibble
 #' @export
 #'
-dr_doodle <- function(survey_quarter = "FR-CGFS_4", years = 1989:2022) {
+dr_doodle <- function(survey_quarter = "FR-CGFS_4", years = 2005:2022) {
 
   s <- stringr::str_sub(survey_quarter, 1, nchar(survey_quarter) - 2)
   q <- stringr::str_sub(survey_quarter, nchar(survey_quarter)) |> as.integer()
@@ -27,7 +27,10 @@ dr_doodle <- function(survey_quarter = "FR-CGFS_4", years = 1989:2022) {
     dr_idunite(., remove = FALSE) |>            # Add identifier
     dplyr::left_join(aphia_latin) %>%                  # Add scientific name
     dplyr::left_join(asfis) %>%                        # Add FAO species names and codes
-    dplyr::left_join(reco, by = c("ship" = "code"))    # Add vesselname
+    dplyr::left_join(reco, by = c("ship" = "code")) %>%    # Add vesselname
+    dplyr::left_join(cgfs_corr) %>%
+    dplyr::mutate(factor = ifelse(is.na(factor),1,factor), hlnoatlngt = hlnoatlngt * factor)
+
   hl <-
     hl |>
     dr_calccpue(hh) |>                          # Calculated CPUE per hour
