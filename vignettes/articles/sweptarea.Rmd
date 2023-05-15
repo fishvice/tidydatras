@@ -1,0 +1,221 @@
+---
+title: "CGFS"
+author: "Martin Pastoors"
+date: "2023-03-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# remotes::install_github("fishvice/tidydatras", ref = "e5d9a0a", force = TRUE, 
+#                         quiet = TRUE, dependencies = FALSE)
+# devtools::install_github("ices-tools-prod/icesDatras", force=TRUE)
+library(icesDatras)
+library(tidyverse)
+library(tidydatras)
+
+source("../../R/doodle.R")
+
+# get flexfile overview
+t <- dr_getflexoverview(surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4))
+
+HH <- dr_getdata(record="HH", surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4), quiet=TRUE)
+
+hh <-
+  HH |>
+  dr_tidy() %>%                                # Make tidy with column specifications
+  dr_idunite(remove = FALSE) %>%            # Add identifier
+  dplyr::left_join(reco, by=c("ship" = "code"))  # Add vesselname
+
+FL <- dr_getdata(record="FL", surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4), quiet=TRUE)
+fl <-
+  FL |>
+  dr_tidy() |>
+  dr_idunite(remove = FALSE) %>%                    # Add identifier
+  dplyr::left_join(reco, by=c("ship" = "code"))  |> # Add vesselname
+  dplyr::mutate(dplyr::across(c("sweptareadskm2","sweptareawskm2"), as.numeric))   # Need to add to dr_tidy
+
+HL <- dr_getdata(record="HL", surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4), quiet=TRUE)
+hl <-
+  HL |>
+  dr_tidy() %>%                                          # Make tidy with column specifications
+  dr_idunite(., remove = FALSE) |>                       # Add identifier
+  dplyr::left_join(aphia_latin) %>%                      # Add scientific name
+  dplyr::left_join(asfis) %>%                            # Add FAO species names and codes
+  dplyr::left_join(reco, by = c("ship" = "code")) |>     # Add vesselname
+  # dplyr::left_join(cgfs_corr) %>%                        # CGFS correction factor?
+  # dplyr::mutate(factor = ifelse(is.na(factor),1,factor), hlnoatlngt = hlnoatlngt * factor)
+    #left join hh
+  
+  # join hh
+  dplyr::left_join(hh %>% dplyr::select(id,
+                                        datatype, hauldur, statrec, shootlong, shootlat, haulval,
+                                        distance, doorspread, wingspread, depth),
+                   by = "id") |>
+  
+  # join fl
+  dplyr::left_join(fl %>% dplyr::select(id,
+                                        cal_distance, cal_doorspread, cal_wingspread,
+                                        distanceflag, dsflag, wsflag,
+                                        sweptareadskm2, sweptareawskm2),
+                   by = "id") |>
+  
+  tidyr::drop_na(sweptareadskm2) %>% 
+
+  # catch per hour
+  dplyr::mutate(number_per_hour = dplyr::case_when(
+       datatype %in% c("S", "R")  ~ hlnoatlngt * 60 / hauldur,
+       datatype == "C"            ~ hlnoatlngt,
+       TRUE                       ~ as.numeric(NA))) |>
+
+  # catch per km2 wingspread
+  dplyr::mutate(number_per_km2_ws = hlnoatlngt / sweptareawskm2) |>
+
+  # catch per km2 doorspread
+  dplyr::mutate(number_per_km2_ds = hlnoatlngt / sweptareadskm2) |>
+  
+  dplyr::mutate(length = floor(length)) |>
+  dplyr::group_by(id, english_name, length) |>
+  dplyr::summarise(
+    number_per_hour = sum(number_per_hour),
+    number_per_km2_ws = sum(number_per_km2_ws),
+    number_per_km2_ds = sum(number_per_km2_ds),
+    .groups = "drop") 
+
+
+hl %>% 
+  ggplot(aes(x=number_per_hour, y=number_per_km2_ws)) +
+  theme_bw() +
+  geom_point()
+
+
+```
+
+```{r}
+d <- dr_doodle2(survey = "FR-CGFS",
+                quarters = 4,
+                years = 2005:2022,
+                folder="C:/DATA/DATRAS/raw")
+
+```
+
+```{r}
+top <- 
+  readr::read_rds("C:/Users/MartinPastoors/Martin Pastoors/FLYSHOOT - General/rdata/top_27.7.d-27.7.e.rds")  %>% 
+  mutate(PANEL=row_number())
+
+```
+
+```{r}
+library(DescTools)
+
+# plot indices
+p <-
+  d |> 
+  mutate(n = DescTools::Winsorize(n, probs=c(0, 0.95), na.rm=TRUE)) %>%
+  mutate(B = n * 0.001 * length^3) |> 
+  group_by(vessel, id, year, species, latin, english_name) |>
+  # group_by(id, year, english_name) |> 
+  summarise(
+    B = sum(B), 
+    N = sum(n),
+    meanlength = weighted.mean(length, n), 
+    .groups = "drop") |> 
+  filter(species %in% top$species) |> 
+  mutate(english_species = paste(english_name, species)) %>% 
+  mutate(english_species = factor(english_species, levels=top$english_species)) %>% 
+
+  # ggplot(aes(year, B, colour = vessel)) +
+  ggplot(aes(year, N, colour = vessel)) +
+  # ggplot(aes(year, B)) +
+  theme_bw() +
+  stat_summary(fun.data = "mean_cl_boot") +
+  expand_limits(y = 0) +
+  scale_colour_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = scales::pretty_breaks()) +
+  facet_wrap(~english_species)
+
+ggplot_build(p)$data[[1]] %>% 
+  mutate(PANEL=as.integer(as.character(PANEL))) %>% 
+  left_join(top) %>% 
+  
+  readr::write_rds(file="cgfs index.rds")
+
+
+
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   filter(!is.na(LenMeasType), LenMeasType != 1) %>% 
+#   group_by(latin, LenMeasType) %>% 
+#   summarise(n=n()) %>% 
+#   View()
+
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   
+#   setNames(tolower(names(.))) %>% 
+#   
+#   dplyr::mutate(length     = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass)) |>
+# 
+#   # apply subfactor
+#   dplyr::mutate(subfactor = ifelse(is.na(subfactor),1, subfactor)) |>
+#   dplyr::mutate(hlnoatlngt = hlnoatlngt * subfactor) |>
+#   
+#   filter(grepl("Raja", latin)) %>%
+#   mutate(lenmeastype = ifelse(is.na(lenmeastype), 0, lenmeastype)) %>% 
+#   group_by(latin, lenmeastype, year) %>%
+#   drop_na(length, hlnoatlngt) %>% 
+#   summarise(meanlength=weighted.mean(length, hlnoatlngt)) %>% 
+#   drop_na(meanlength) %>% 
+#   # View()
+#   
+#   ggplot(aes(year, meanlength, colour = lenmeastype)) +
+#   # ggplot(aes(year, B)) +
+#   theme_bw() +
+#   stat_summary(fun.data = "mean_cl_boot") +
+#   expand_limits(y = 0) +
+#   scale_colour_brewer(palette = "Set1") +
+#   scale_y_continuous(breaks = scales::pretty_breaks()) +
+#   facet_wrap(~latin)
+
+
+# Start the clock
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- tibble::tibble(survey = surveys) %>% 
+#            dplyr::mutate(year = purrr::map(survey, icesDatras::getSurveyYearList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(year) 
+# proc.time() - ptm
+# 
+# d <- d %>% dplyr::mutate(quarter = purrr::map2(survey, year, icesDatras::getSurveyYearQuarterList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(quarter)
+# proc.time() - ptm
+
+
+
+
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- dr_getdata(record = "HL", surveys="NS-IBTS", 1990:2023, c(1,3), quiet=TRUE)
+# proc.time() - ptm
+#  #   user  system elapsed 
+#  # 247.39   25.04  471.30 
+# 
+# icesDatras::getDatrasDataOverview()
+
+
+```
+
