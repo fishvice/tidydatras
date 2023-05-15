@@ -1,0 +1,180 @@
+---
+title: "IBTS"
+author: "Martin Pastoors"
+date: "2023-03-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# remotes::install_github("fishvice/tidydatras", ref = "e5d9a0a", force = TRUE, 
+#                         quiet = TRUE, dependencies = FALSE)
+library(tidyverse)
+library(tidydatras)
+source("../../R/doodle.R")
+
+```
+
+```{r}
+myquarter <- 3
+
+d <- dr_doodle2(survey = "NS-IBTS",
+                quarters = c(1,3),
+                years = 2005:2022,
+                folder="C:/DATA/DATRAS/raw")
+
+```
+
+```{r}
+top <- 
+  readr::read_rds("C:/Users/MartinPastoors/Martin Pastoors/FLYSHOOT - General/rdata/top_27.4.b-27.4.c.rds")  %>% 
+  mutate(PANEL=row_number())
+
+```
+
+```{r}
+library(DescTools)
+
+# plot indices
+p <-
+  d |> 
+  mutate(n = DescTools::Winsorize(n, probs=c(0, 0.95), na.rm=TRUE)) %>%
+  filter(shootlat <= 57.5) %>% 
+  filter(species %in% top$species) |> 
+  mutate(B = n * 0.001 * length^3) |> 
+  group_by(id, year, species, latin, english_name) |>
+  summarise(
+    B = sum(B), 
+    N = sum(n),
+    meanlength = weighted.mean(length, n), 
+    .groups = "drop") |> 
+  mutate(english_species = paste(english_name, species)) %>% 
+  mutate(english_species = factor(english_species, levels=top$english_species)) %>% 
+
+  # ggplot(aes(year, B, colour = vessel)) +
+  ggplot(aes(year, N)) +
+  # ggplot(aes(year, B)) +
+  theme_bw() +
+  stat_summary(fun.data = "mean_cl_boot") +
+  expand_limits(y = 0) +
+  scale_colour_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = scales::pretty_breaks()) +
+  facet_wrap(~english_species)
+
+ggplot_build(p)$data[[1]] %>% 
+  mutate(PANEL=as.integer(as.character(PANEL))) %>% 
+  left_join(top) %>% 
+  # View()
+  readr::write_rds(file=paste0("ibtsq",myquarter," index.rds"))
+
+# ggplot_build(p)$data[[1]] %>% 
+#   mutate(PANEL=as.integer(as.character(PANEL))) %>% 
+#   left_join(top) %>% 
+#   View()
+  
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   filter(!is.na(LenMeasType), LenMeasType != 1) %>% 
+#   group_by(latin, LenMeasType) %>% 
+#   summarise(n=n()) %>% 
+#   View()
+
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   
+#   setNames(tolower(names(.))) %>% 
+#   
+#   dplyr::mutate(length     = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass)) |>
+# 
+#   # apply subfactor
+#   dplyr::mutate(subfactor = ifelse(is.na(subfactor),1, subfactor)) |>
+#   dplyr::mutate(hlnoatlngt = hlnoatlngt * subfactor) |>
+#   
+#   filter(grepl("Raja", latin)) %>%
+#   mutate(lenmeastype = ifelse(is.na(lenmeastype), 0, lenmeastype)) %>% 
+#   group_by(latin, lenmeastype, year) %>%
+#   drop_na(length, hlnoatlngt) %>% 
+#   summarise(meanlength=weighted.mean(length, hlnoatlngt)) %>% 
+#   drop_na(meanlength) %>% 
+#   # View()
+#   
+#   ggplot(aes(year, meanlength, colour = lenmeastype)) +
+#   # ggplot(aes(year, B)) +
+#   theme_bw() +
+#   stat_summary(fun.data = "mean_cl_boot") +
+#   expand_limits(y = 0) +
+#   scale_colour_brewer(palette = "Set1") +
+#   scale_y_continuous(breaks = scales::pretty_breaks()) +
+#   facet_wrap(~latin)
+
+
+# Start the clock
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- tibble::tibble(survey = surveys) %>% 
+#            dplyr::mutate(year = purrr::map(survey, icesDatras::getSurveyYearList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(year) 
+# proc.time() - ptm
+# 
+# d <- d %>% dplyr::mutate(quarter = purrr::map2(survey, year, icesDatras::getSurveyYearQuarterList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(quarter)
+# proc.time() - ptm
+
+
+
+
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- dr_getdata(record = "HL", surveys="NS-IBTS", 1990:2023, c(1,3), quiet=TRUE)
+# proc.time() - ptm
+#  #   user  system elapsed 
+#  # 247.39   25.04  471.30 
+# 
+# icesDatras::getDatrasDataOverview()
+
+library(rnaturalearth)
+library(sf)
+bb <- st_bbox(c(xmin = -5, ymin = 51, xmax = 12, ymax = 63),
+              crs = 4326)
+# bb <- st_bbox(c(xmin = -15, ymin = 42, xmax = 12, ymax = 63),
+#               crs = 4326)
+cl <-
+  rnaturalearth::ne_countries(scale = 50, continent = "europe", returnclass = "sf") |>
+  st_make_valid() |>
+  st_crop(bb) |>
+  # sf::st_coordinates() |>
+  # as_tibble() |>
+  # mutate(group = paste(L1, L2, L3)) |>
+  dplyr::select(group=admin)
+
+
+d %>% 
+  mutate(country=ifelse(country=="DE","DE","OTH")) %>% 
+  mutate(country=factor(country, levels=c("OTH","DE"))) %>% 
+  filter(year >= 2019) %>% 
+  distinct(id, shootlong, shootlat, country, quarter) %>% 
+
+  ggplot(aes(x=shootlong, y=shootlat)) +
+  theme_bw() +
+  geom_point(aes(colour=country, size=country)) +
+  geom_sf(data = cl, inherit.aes = FALSE)  +
+  coord_sf(xlim=c(bb$xmin, bb$xmax), ylim=c(bb$ymin, bb$ymax)) +
+  scale_size_manual(values=c("OTH"=0.5, "DE"=1)) +
+  scale_colour_manual(values=c("OTH"="grey", "DE"="red")) +
+  facet_wrap(~paste0("Q", quarter), ncol=2)
+
+```
+

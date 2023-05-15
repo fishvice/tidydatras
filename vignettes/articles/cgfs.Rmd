@@ -1,0 +1,193 @@
+---
+title: "CGFS"
+author: "Martin Pastoors"
+date: "2023-03-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# remotes::install_github("fishvice/tidydatras", ref = "e5d9a0a", force = TRUE, 
+#                         quiet = TRUE, dependencies = FALSE)
+# devtools::install_github("ices-tools-prod/icesDatras", force=TRUE)
+library(icesDatras)
+library(tidyverse)
+library(tidydatras)
+
+# source("../../R/doodle.R")
+source("../../R/dr_getdata.R")
+source("../../R/dr_getflexdata.R")
+source("../../R/dr_getflexoverview.R")
+source("../../R/dr_getoverview.R")
+source("../../R/dr_settypes.R")
+source("../../R/dr_download_all.R")
+source("../../R/dr_idunite.R")
+source("../../R/dr_idseparate.R")
+source("../../R/dr_tidy.R")
+source("../../R/dr_calccpue.R")
+
+icesDatras::getFlexFile(survey="FR-CGFS", year=2015, quarter=4)
+t <- dr_getflexoverview(surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4))
+hh <- dr_getdata(record="HH", surveys=c("NS-IBTS", "FR-CGFS"), years=2000:2022, quarters=c(1,3,4), quiet=TRUE)
+fl <- dr_getdata(record="FL", surveys=c("FR-CGFS"), years=2020:2021, quarters=c(4), quiet=TRUE)
+
+fl <- dr_getdata(record="FL", surveys=c("FR-CGFS"), years=2020:2021, quarters=c(4), 
+                 fromweb=FALSE, folder="C:/DATA/DATRAS/raw", quiet=TRUE)
+
+t <- dr_calclengthindex(surveys = c("NS-IBTS", "FR-CGFS"), years = 2005:2022, quarters=c(1,4),
+                        fromweb=FALSE, folder="C:/DATA/DATRAS/raw", quiet=TRUE)
+
+t %>% 
+  filter(species=="HOM") %>% 
+  mutate(zero = ifelse(number_per_hour == 0, TRUE, FALSE)) %>% 
+  group_by(survey, quarter, year, species, zero) %>% 
+  summarise(n=n()) %>% 
+  group_by(survey, quarter, year, species) %>% 
+  mutate(perc_zero = n / sum(n)) %>% 
+  filter(zero == TRUE) %>% 
+  ggplot(aes(x=year, y=perc_zero, group=survey)) +
+  geom_line(aes(colour=survey))
+
+
+
+folder="C:/DATA/DATRAS/raw"
+
+dr_download_all(save_dir ="C:/DATA/DATRAS/raw", 
+                surveys=c("FR-CGFS", "NS-IBTS"), 
+                years=1990:2022, 
+                quarters=c(1,3,4), 
+                quiet=FALSE)
+
+t %>% ggplot(aes(x=doorspread, y=wingspread)) + theme_bw() + geom_point()
+t %>% ggplot(aes(x=sweptareadskm2, y=sweptareawskm2)) + theme_bw() + geom_point()
+
+```
+
+```{r}
+d <- dr_doodle2(survey = "FR-CGFS",
+                quarters = 4,
+                years = 2005:2022,
+                folder="C:/DATA/DATRAS/raw")
+
+```
+
+```{r}
+top <- 
+  readr::read_rds("C:/Users/MartinPastoors/Martin Pastoors/FLYSHOOT - General/rdata/top_27.7.d-27.7.e.rds")  %>% 
+  mutate(PANEL=row_number())
+
+```
+
+```{r}
+library(DescTools)
+
+# plot indices
+p <-
+  d |> 
+  mutate(n = DescTools::Winsorize(n, probs=c(0, 0.95), na.rm=TRUE)) %>%
+  mutate(B = n * 0.001 * length^3) |> 
+  group_by(vessel, id, year, species, latin, english_name) |>
+  # group_by(id, year, english_name) |> 
+  summarise(
+    B = sum(B), 
+    N = sum(n),
+    meanlength = weighted.mean(length, n), 
+    .groups = "drop") |> 
+  filter(species %in% top$species) |> 
+  mutate(english_species = paste(english_name, species)) %>% 
+  mutate(english_species = factor(english_species, levels=top$english_species)) %>% 
+
+  # ggplot(aes(year, B, colour = vessel)) +
+  ggplot(aes(year, N, colour = vessel)) +
+  # ggplot(aes(year, B)) +
+  theme_bw() +
+  stat_summary(fun.data = "mean_cl_boot") +
+  expand_limits(y = 0) +
+  scale_colour_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = scales::pretty_breaks()) +
+  facet_wrap(~english_species)
+
+ggplot_build(p)$data[[1]] %>% 
+  mutate(PANEL=as.integer(as.character(PANEL))) %>% 
+  left_join(top) %>% 
+  
+  readr::write_rds(file="cgfs index.rds")
+
+
+
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   filter(!is.na(LenMeasType), LenMeasType != 1) %>% 
+#   group_by(latin, LenMeasType) %>% 
+#   summarise(n=n()) %>% 
+#   View()
+
+# HL %>% 
+#   mutate(Valid_Aphia=as.numeric(Valid_Aphia)) %>% 
+#   left_join(aphia_latin, by=c("Valid_Aphia"="aphia")) %>% 
+#   
+#   setNames(tolower(names(.))) %>% 
+#   
+#   dplyr::mutate(length     = ifelse(lngtcode %in% c(".", "0"), lngtclass / 10, lngtclass)) |>
+# 
+#   # apply subfactor
+#   dplyr::mutate(subfactor = ifelse(is.na(subfactor),1, subfactor)) |>
+#   dplyr::mutate(hlnoatlngt = hlnoatlngt * subfactor) |>
+#   
+#   filter(grepl("Raja", latin)) %>%
+#   mutate(lenmeastype = ifelse(is.na(lenmeastype), 0, lenmeastype)) %>% 
+#   group_by(latin, lenmeastype, year) %>%
+#   drop_na(length, hlnoatlngt) %>% 
+#   summarise(meanlength=weighted.mean(length, hlnoatlngt)) %>% 
+#   drop_na(meanlength) %>% 
+#   # View()
+#   
+#   ggplot(aes(year, meanlength, colour = lenmeastype)) +
+#   # ggplot(aes(year, B)) +
+#   theme_bw() +
+#   stat_summary(fun.data = "mean_cl_boot") +
+#   expand_limits(y = 0) +
+#   scale_colour_brewer(palette = "Set1") +
+#   scale_y_continuous(breaks = scales::pretty_breaks()) +
+#   facet_wrap(~latin)
+
+
+# Start the clock
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- tibble::tibble(survey = surveys) %>% 
+#            dplyr::mutate(year = purrr::map(survey, icesDatras::getSurveyYearList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(year) 
+# proc.time() - ptm
+# 
+# d <- d %>% dplyr::mutate(quarter = purrr::map2(survey, year, icesDatras::getSurveyYearQuarterList)) 
+# proc.time() - ptm
+# 
+# d <- d %>% tidyr::unnest(quarter)
+# proc.time() - ptm
+
+
+
+
+# ptm <- proc.time()
+#   
+# # icesDatras::getSurveyList()
+# surveys <- "NS-IBTS"
+# d       <- dr_getdata(record = "HL", surveys="NS-IBTS", 1990:2023, c(1,3), quiet=TRUE)
+# proc.time() - ptm
+#  #   user  system elapsed 
+#  # 247.39   25.04  471.30 
+# 
+# icesDatras::getDatrasDataOverview()
+
+
+```
+
