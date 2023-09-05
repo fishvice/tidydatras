@@ -126,3 +126,12 @@ ibts_rect <-
 
 save(ibts_rect, file="data/ibts_rect.rda")
 usethis::use_data(ibts_rect, overwrite=TRUE)
+
+## CGFS correction factors (vessel Thalassa) -------------------------------------------------
+cgfs_corr <-
+  read.csv(file="data-raw/cgfs_corr.csv")  %>%
+  dplyr::rename_all(tolower) %>%
+  dplyr::mutate(vessel = toupper(vessel))
+
+save(cgfs_corr, file="data/cgfs_corr.rda")
+usethis::use_data(cgfs_corr, overwrite=TRUE)

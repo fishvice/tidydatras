@@ -1,0 +1,62 @@
+---
+title: "Survey overviews"
+author: "Martin Pastoors"
+date: "2023-03-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+# remotes::install_github("fishvice/tidydatras", ref = "e5d9a0a", force = TRUE, 
+#                         quiet = TRUE, dependencies = FALSE)
+library(tidyverse)
+library(tidydatras)
+```
+
+```{r}
+filelist <- list.files(
+  path=file.path("C:/DATA", "DATRAS", "tidy"),
+  pattern="hh.rds",
+  full.names = TRUE)
+
+d <- tibble() 
+for (fn in filelist) {d <- bind_rows(d, readr::read_rds(fn) %>% 
+                                       dplyr::select(survey, year, quarter, shootlat, shootlong))}
+
+```
+
+```{r}
+library(rnaturalearth)
+library(sf)
+bb <- st_bbox(c(xmin = -5, ymin = 51, xmax = 12, ymax = 63),
+              crs = 4326)
+# bb <- st_bbox(c(xmin = -15, ymin = 42, xmax = 12, ymax = 63),
+#               crs = 4326)
+cl <-
+  rnaturalearth::ne_countries(scale = 50, continent = "europe", returnclass = "sf") |>
+  st_make_valid() |>
+  st_crop(bb) |>
+  st_coordinates() |>
+  as_tibble() |>
+  mutate(group = paste(L1, L2, L3)) |>
+  select(lon = X, lat = Y, group)
+
+d |> 
+  # filter(survey %in% c("EVHOE","FR-CGFS", "IE-IGFS", "NS-IBTS","SCOWCGFS")) %>%
+  filter(survey %in% c("NS-IBTS")) %>%
+  # filter(country == "DE", quarter==3) %>% 
+  # filter(survey %in% c("EVHOE","FR-CGFS", "IE-IGFS", "NIGFS", "NS-IBTS", "PT-IBTS","SCOWCGFS", "SP-NORTH")) %>%
+  filter(year > 2010) %>% 
+  ggplot(aes(x=shootlong, y=shootlat, colour = survey)) +
+  # ggplot(aes(year, B)) +
+  theme_bw() +
+  geom_point(alpha=0.3, size=0.2) +
+  geom_sf(data = cl, inherit.aes = FALSE)  +
+  coord_sf(xlim=c(bb$xmin, bb$xmax), ylim=c(bb$ymin, bb$ymax)) +
+  facet_wrap(~year) 
+  
+```
+

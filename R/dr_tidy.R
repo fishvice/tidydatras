@@ -18,6 +18,7 @@ dr_tidy <- function(d) {
   if(type == "HH") d <- d |> dr_tidyhh()
   if(type == "HL") d <- d |> dr_tidyhl()
   if(type == "CA") d <- d |> dr_tidyca()
+  if(type == "FL") d <- d |> dr_tidyfl()
 
   return(d)
 
@@ -38,7 +39,8 @@ dr_tidyhh <- function(d) {
                   timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
                                     ":",
                                     stringr::str_sub(timeshot, 3, 4)),
-                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot))) |>
+                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot)),
+                  year = as.integer(year)) |>
     dplyr::filter(haulval == "V")
 
   return(d)
@@ -73,7 +75,8 @@ dr_tidyhl <- function(d) {
     dplyr::mutate(aphia      = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                                                 speccodetype                      == "W" ~ speccode,
                                                 TRUE                                     ~ NA_character_),
-                  aphia = as.integer(aphia))
+                  aphia = as.integer(aphia),
+                  year = as.integer(year))
 
   return(d)
 
@@ -95,7 +98,33 @@ dr_tidyca <- function(d) {
                   aphia = dplyr::case_when(!is.na(valid_aphia) & valid_aphia != "0" ~ valid_aphia,
                                            speccodetype == "W" ~ speccode,
                                            TRUE ~ NA_character_),
-                  aphia = as.integer(aphia))
+                  aphia = as.integer(aphia),
+                  year = as.integer(year))
+
+
+  return(d)
+
+}
+
+#' dr_tidyfl
+#'
+#' @param d DATRAS raw flexfile dataframe
+#'
+#' @return a tibble
+#'
+dr_tidyfl <- function(d) {
+
+  d <-
+    d |>
+    dplyr::mutate(timeshot = stringr::str_pad(timeshot, width = 4, side = "left", pad = "0"),
+                  timeshot = paste0(stringr::str_sub(timeshot, 1, 2),
+                                    ":",
+                                    stringr::str_sub(timeshot, 3, 4)),
+                  timeshot = lubridate::ymd_hm(paste(year, month, day, timeshot)),
+                  year     = as.integer(year)) |>
+    dplyr::mutate(dplyr::across(c("cal_doorspread","cal_wingspread","cal_distance",
+                                  "sweptareadskm2", "sweptareawskm2"), as.numeric)) |>
+    dplyr::filter(haulval == "V")
 
 
   return(d)
