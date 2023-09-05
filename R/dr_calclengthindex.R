@@ -61,7 +61,7 @@ dr_calclengthindex <- function(surveys = "FR-CGFS", years = 2005:2022, quarters=
                   aphia, latin, species, english_name, family, order,
                   number_per_hour, number_per_km2_ws, number_per_km2_ds) |>
     dplyr::group_by(survey, quarter) |>
-    tidyr::complete(id, nesting(aphia, latin, species, english_name, family, order),
+    tidyr::complete(id, tidyr::nesting(aphia, latin, species, english_name, family, order),
                     fill=list(number_per_hour=0, number_per_km2_ws=0, number_per_km2_ds=0)) |>
     dplyr::mutate(
       number_per_km2_ds = ifelse(id %in% fl$id, number_per_km2_ds, NA),

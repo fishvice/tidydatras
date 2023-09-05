@@ -43,7 +43,7 @@ dr_download_all <- function(save_dir, surveys="all", years="all", quarters="all"
     if(!quiet) print(paste(sur))
 
     yrs <- dplyr::filter(dtrs, survey==sur) |> dplyr::select(year)    |> tidyr::unnest(year) |> unlist() |>   as.integer()
-    qts <- dplyr::filter(dtrs, survey==sur) |> dplyr::select(quarter) |> tidyr::unnest(quarter) |> distinct(quarter) |>
+    qts <- dplyr::filter(dtrs, survey==sur) |> dplyr::select(quarter) |> tidyr::unnest(quarter) |> dplyr::distinct(quarter) |>
       unlist() |>   as.integer()
 
     if(!quiet) print("HH")

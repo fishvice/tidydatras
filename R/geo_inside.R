@@ -26,8 +26,8 @@ geo_inside <- function(lon, lat, map, variable) {
     # return(pt %>% sf::st_join(map) %>% dplyr::pull(!!variable))
 
     # faster
-    i <- pt %>% st_within(map) %>% as.numeric()
-    y <- map %>% pull(!!variable)
+    i <- pt %>% sf::st_within(map) %>% as.numeric()
+    y <- map %>% dplyr::pull(!!variable)
     return(y[i])
 
   }
